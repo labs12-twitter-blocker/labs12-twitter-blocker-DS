@@ -1,1 +1,1 @@
-web: gunicorn hn_comments:APP 
+web: gunicorn app:APP 
