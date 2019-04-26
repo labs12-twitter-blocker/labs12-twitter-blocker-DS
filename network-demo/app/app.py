@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 import re
 from collections import Counter
+#set up twitter environment
 TWITTER_AUTH =tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'),config('TWITTER_CONSUMER_SECRET'))
 TWITTER_AUTH.set_access_token(config('TWITTER_ACCESS_TOKEN'),config('TWITTER_ACCESS_TOKEN_SECRET'))
 TWITTER = tweepy.API(TWITTER_AUTH)
@@ -21,12 +22,16 @@ def get_first_user_interactions(search):
 					include_rts=True,
 					tweet_mode='extended'
 					)
+	# generate a  list of tweets. join it to string. extract user names. turn
+	# it into a string again.
 	#b is a transistion variable
 	b = [ i.full_text for i in tweets ]
 	b = " ".join(b)
 	b = b.lower()
 	b = b.replace(search, "")
-	interactions =re.findall(r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)',b)
+	#regex for extracting @twitter_handles as elements of a list
+	interactions=re.findall(r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)',ba)
+	# return the most common  names
 	return [ i[0] for i in Counter(interactions).most_common(10) ]
 
 def get_first_user_connections(search, interactions_list):
@@ -42,7 +47,9 @@ def get_first_user_connections(search, interactions_list):
 	b = " ".join(b)
 	b = b.lower()
 	b = b.replace(search, "")
+	#regex for extracting @twitter_handles as elements of a list
 	interactions = re.findall(r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)',b)
+	# turn the list to string and add it to a list
 	interactions = " ".join(interactions)
 	interactions_list.append(interactions)
 	return interactions_list
