@@ -7,7 +7,6 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-
 flask-cors = "*"
 pandas = "*"
 numpy = "*"
@@ -16,18 +15,7 @@ tweepy = "*"
 python-decouple = "*"
 python-dotenv = "*"
 networkx = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"
-
-
-
-
-
-
-
-
-
-
-
-
