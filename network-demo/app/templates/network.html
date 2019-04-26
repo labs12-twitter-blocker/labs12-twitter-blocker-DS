@@ -1,34 +1,124 @@
 <html>
 <head>
-<style type="text/css">
-  #container {
-    max-width: 400px;
-    height: 400px;
-    margin: auto;
-  }
-</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
-<body>
-<div id="container"></div>
-<script src="sigma.min.js"></script>
-<script src="sigma.parsers.json.min.js"></script>
 
-<script>
+<body>
+<div id="plotly-div"></div>
+
 {% block content %}
 {% block javascript %}
-nodes = JSON.parse({{ nodes | tojson }})
-edges = JSON.parse({{ edges | tojson }})
-data = { nodes, edges}
+<script>
 
-  sigma.parsers.json('data', {
-    container: 'container',
-    settings: {
-      defaultNodeColor: '#ec5148'
+edge_x = JSON.parse( {{ edge_x | tojson }} )
+edge_y = JSON.parse( {{ edge_y | tojson }} )
+node_x = JSON.parse( {{ node_x | tojson }} )
+node_y = JSON.parse( {{ node_y | tojson }} )
+node_list = JSON.parse( {{ node_list | tojson }})
+node_weights = JSON.parse( {{ node_weights | tojson }})
+user = JSON.parse( {{ user |tojson }})
+trace1 = {
+  x: edge_x,
+  y: edge_y, 
+  hoverinfo: 'none', 
+  line: {
+    color: 'rgb(210,210,210)', 
+    width: 1
+  }, 
+  mode: 'lines', 
+  type: 'scatter', 
+  uid: '77d9218f-a095-11e8-9052-9cb6d011dde2', 
+  xsrc: 'crawftv:5:faa5af', 
+  ysrc: 'crawftv:5:24e515'
+};
+trace2 = {
+  x: node_x,
+  y: node_y, 
+  hoverinfo: 'text', 
+  marker: {
+    color: '#6959CD', 
+    line: {
+      color: 'rgb(50,50,50)', 
+      width: 0.5
+    }, 
+    size: node_weights, 
+    sizemode: 'area', 
+    sizeref: 0.10320987654320987, 
+    sizesrc: 'crawftv:4:29c842', 
+    symbol: 'circle-dot'
+  }, 
+  mode: 'markers', 
+  name: 'ntw', 
+  text: node_list,
+  textsrc: 'crawftv:4:f22311', 
+  type: 'scatter', 
+  uid: '77d92190-a095-11e8-a21b-9cb6d011dde2', 
+  xsrc: 'crawftv:4:1d8604', 
+  ysrc: 'crawftv:4:5792c3'
+};
+data = [trace1, trace2];
+layout = {
+  annotations: [
+    {
+      x: 0, 
+      y: -0.1, 
+      font: {size: 14}, 
+      showarrow: false, 
+      text: 'This Graph uses a Spectral Layout', 
+      xanchor: 'left', 
+      xref: 'paper', 
+      yanchor: 'bottom', 
+      yref: 'paper'
     }
-  });
+  ], 
+  autosize: false, 
+  dragmode: 'pan', 
+  font: {size: 12}, 
+  height: 800, 
+  hovermode: 'closest', 
+  margin: {
+    r: 40, 
+    t: 100, 
+    b: 85, 
+    l: 40
+  }, 
+  showlegend: true, 
+  title: {text: `Analyzing the twitter network of @${user}`}, 
+  width: 800, 
+  xaxis: {
+    autorange: false, 
+    range: [-0.48885507414661744, 0.2761167501508741], 
+    showgrid: false, 
+    showline: false, 
+    showticklabels: false, 
+    title: {text: ''}, 
+    type: 'linear', 
+    zeroline: false
+  }, 
+  yaxis: {
+    autorange: false, 
+    range: [-0.3397400254203239, 0.41554559336440916], 
+    showgrid: false, 
+    showline: false, 
+    showticklabels: false, 
+    title: {text: ''}, 
+    type: 'linear', 
+    zeroline: false
+  }
+};
+Plotly.plot('plotly-div', {
+  data: data,
+  layout: layout
+});
 
-{% endblock %}
-{% endblock %}
+
+
+
+
+
 </script>
+{% endblock %}
+{% endblock %}
+
 </body>
 </html>
