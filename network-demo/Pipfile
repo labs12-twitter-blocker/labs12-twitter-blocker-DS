@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-<<<<<<< HEAD
+
 flask-cors = "*"
 pandas = "*"
 numpy = "*"
@@ -19,15 +19,15 @@ networkx = "*"
 
 [requires]
 python_version = "3.6"
-=======
-python-decouple = "*"
-gunicorn = "*"
-numpy = "*"
-tweepy = "*"
-scikit-learn = "*"
-pandas = "*"
-flask-cors = "*"
 
-[requires]
-python_version = "3.7"
->>>>>>> 954de20957b8d5f7764ef8843db21fdbe4e5d891
+
+
+
+
+
+
+
+
+
+
+
