@@ -156,10 +156,10 @@ def interaction_chain(origin_user, search_target_users, return_limit, last_lvl):
 
 
 def return_json(pageranked_df, origin_user, search_target_users,
-                qty_users_found, qty_interactions_found, api_used):
+                qty_users_found, qty_interactions_found, api_used,no_of_results):
     ranked_dict = pageranked_df[["username"]].head(no_of_results).username.tolist()
     #search_dict = {("search_user_%s" % i) : search_target_users[i] for i in range(0, len(search_target_users))}
-    final_dict = {"origin_user" : original_user, 
+    final_dict = {"original_user" : origin_user, 
                   "search_users" : search_target_users, 
                   "network_size": qty_users_found,
                   "interactions_found" : qty_interactions_found, 
@@ -249,9 +249,10 @@ def generate_recommendation_response(original_user, search_users, return_limit,
     api_usage = api_usage.set_index('type')
     api_usage = api_usage.to_dict('index')
     # REWRITE AS FUNCTION <<<<<<<<
+    print("calculated API usage %s", api_usage)
 
     # Return the final output. 
-    output = return_json(dg_pr_df, original_user, search_users, found_nodes, interactions_found, api_usage)
+    output = return_json(dg_pr_df, original_user, search_users, found_nodes, interactions_found, api_usage, no_of_results)
 
     return output
 
