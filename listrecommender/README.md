@@ -1,12 +1,13 @@
 # DS List Recommender API Endpoint
 
-# endpoint address. 
+#### endpoint address. 
 https://us-central1-twitter-follower-blocker.cloudfunctions.net/list_rec
 
-Headers: 
+#### Headers: 
 ```[{"key":"Content-Type","name":"Content-Type","value":"application/json","description":"Flag that the body is JSON. ","type":"text"}]```
 
-Body: JSON(application/json)
+#### Body: 
+*JSON(application/json)*
 ```
 {
     "original_user": "bwinterrose",
