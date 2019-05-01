@@ -1,6 +1,6 @@
 # DS List Recommender API Endpoint
 
-#### endpoint address. 
+#### Endpoint address. 
 https://us-central1-twitter-follower-blocker.cloudfunctions.net/list_rec
 
 #### Headers: 
