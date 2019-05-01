@@ -22,3 +22,6 @@ pandas==0.23.4
 numpy==1.15.4
 networkx==2.1
 matplotlib==2.2.3
+
+
+https://us-central1-twitter-follower-blocker.cloudfunctions.net/list_rec
