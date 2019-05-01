@@ -25,3 +25,6 @@ https://us-central1-twitter-follower-blocker.cloudfunctions.net/list_rec
     "no_of_results": 50
 }
 ```
+
+#### Time 
+Current time to process is around 36 seconds. 
