@@ -7,7 +7,8 @@ Headers:
 ```[{"key":"Content-Type","name":"Content-Type","value":"application/json","description":"Flag that the body is JSON. ","type":"text"}]```
 
 Body: JSON(application/json)
-```{
+```
+{
     "original_user": "bwinterrose",
     "TWITTER_ACCESS_TOKEN": "<ACCESS TOKEN >",
     "TWITTER_ACCESS_TOKEN_SECRET": "<ACCESS TOKEN SECRET>",
@@ -22,3 +23,4 @@ Body: JSON(application/json)
     "last_level": 2,
     "no_of_results": 50
 }
+```
