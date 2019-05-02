@@ -1,0 +1,16 @@
+click==6.7
+Flask==1.0.2
+itsdangerous==0.24
+Jinja2==2.10
+MarkupSafe==1.0
+pip==18.0
+requests==2.19.1
+setuptools==40.2.0
+Werkzeug==0.14.1
+wheel==0.31.1
+tweepy==3.7.0
+python-decouple==3.1
+pandas==0.23.4
+numpy==1.15.4
+networkx==2.1
+matplotlib==2.2.3
