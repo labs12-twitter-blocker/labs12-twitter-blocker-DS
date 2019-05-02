@@ -16,6 +16,8 @@ python-decouple = "*"
 python-dotenv = "*"
 networkx = "*"
 gunicorn = "*"
+nest-asyncio = "*"
+asyncio = "*"
 
 [requires]
 python_version = "3.6"
