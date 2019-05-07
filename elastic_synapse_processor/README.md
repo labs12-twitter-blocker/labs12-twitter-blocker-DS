@@ -16,6 +16,14 @@
 ### 2. Create Container For Model
   #### TODO: ADD FURTHER DETAILS/INSTRUCTION
   
+  
+### 3. Create Container for Flask Client
+  #### TODO: ADD FURTHER DETAILS/INSTRUCTION
+  
+  
+### 4. Deploy To Kubernetes/Google Cloud Services
+  #### TODO: ADD FURTHER DETAILS/INSTRUCTION
+  
 
 
 
