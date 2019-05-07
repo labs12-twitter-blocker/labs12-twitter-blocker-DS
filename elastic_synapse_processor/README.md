@@ -73,9 +73,6 @@ cd ~/bert-client-server-tests
 
 CLIENT_IMAGE_NAME=bert_toxic_client
 CLIENT_VER=v5
-DOCKER_USER=chrisseiler96
-mkdir asset
-gsutil cp gs://cloud-tpu-checkpoints/bert/uncased_L-12_H-768_A-12/vocab.txt asset/
 docker build -t $USER/$CLIENT_IMAGE_NAME .
 docker tag $USER/$CLIENT_IMAGE_NAME $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
 docker push $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
