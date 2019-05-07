@@ -15,7 +15,7 @@
   
 ### 2. Create Container For Model
   #### Run these commands in Google Cloud Services Console
-IMAGE_NAME=tf_serving_bert_toxic
+`IMAGE_NAME=tf_serving_bert_toxic
 VER=1556822021_v5
 MODEL_NAME=bert
 DOCKER_USER=chrisseiler96
@@ -26,7 +26,7 @@ gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1556822021 ~/m
 docker cp ~/models $IMAGE_NAME:/models/$MODEL_NAME
 docker commit --change "ENV MODEL_NAME $MODEL_NAME" $IMAGE_NAME $USER/$IMAGE_NAME
 docker tag $USER/$IMAGE_NAME $DOCKER_USER/$IMAGE_NAME:$VER
-docker push $DOCKER_USER/$IMAGE_NAME:$VER
+docker push $DOCKER_USER/$IMAGE_NAME:$VER`
   
   
 ### 3. Create Container for Flask Client
