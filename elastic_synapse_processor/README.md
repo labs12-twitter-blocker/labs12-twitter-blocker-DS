@@ -1,6 +1,7 @@
 # Elastic Synapse Processor
-## Usage: 
+## API Usage: 
 ### Available Endpoints:
+#### Toxic Comments TODO: ADD ENDPOINT INSTRUCTIONS
 
 
 
@@ -10,7 +11,7 @@
 
 
 
-# Development:
+##Development:
   ### Development Pre-Requisites:
   * Google Cloud Services Account
   * Google Cloud Bucket
@@ -21,7 +22,7 @@
 
 
 
-## Model Training and Deployment Pipeline
+## Model Training and Deployment Pipeline:
 
 ### 1. Model Training: 
   https://colab.research.google.com/drive/1X2zP-C3os4vt0jlJ_OQ_u5kq6pGErPd3
