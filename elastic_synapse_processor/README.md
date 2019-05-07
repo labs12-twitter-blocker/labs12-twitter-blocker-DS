@@ -32,6 +32,9 @@
   #### Run these commands in Google Cloud Services Console
 
 ```
+#Login with Docker
+docker login
+
 #Name of docker image to update/create
 IMAGE_NAME=tf_serving_bert_toxic   
 
@@ -52,8 +55,8 @@ mkdir ~/models
 gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1556822021 ~/models
 
 docker cp ~/models $IMAGE_NAME:/models/$MODEL_NAME
-docker commit --change "ENV MODEL_NAME $MODEL_NAME" $IMAGE_NAME $USER/$IMAGE_NAME
-docker tag $USER/$IMAGE_NAME $DOCKER_USER/$IMAGE_NAME:$VER
+docker commit --change "ENV MODEL_NAME $MODEL_NAME" $IMAGE_NAME $DOCKER_USER/$IMAGE_NAME
+docker tag $DOCKER_USER/$IMAGE_NAME $DOCKER_USER/$IMAGE_NAME:$VER
 docker push $DOCKER_USER/$IMAGE_NAME:$VER
 ```
  
