@@ -44,7 +44,23 @@ docker push $DOCKER_USER/$IMAGE_NAME:$VER
  
   
 ### 3. Create Container for Flask Client
-  #### TODO: ADD FURTHER DETAILS/INSTRUCTION
+#### Run these commands in Google Cloud Services Console
+
+```
+#Note You can use a custom repo here, but it must be a fork from chrisseiler96/bert-client-server-tests.
+#This includes necessary files for creating docker container/dependencies
+git clone https://github.com/chrisseiler96/bert-client-server-tests.git
+
+cd ~/bert-client-server-tests
+
+CLIENT_IMAGE_NAME=bert_toxic_client
+CLIENT_VER=v5
+DOCKER_USER=chrisseiler96
+mkdir asset
+gsutil cp gs://cloud-tpu-checkpoints/bert/uncased_L-12_H-768_A-12/vocab.txt asset/
+docker build -t $USER/$CLIENT_IMAGE_NAME .
+docker tag $USER/$CLIENT_IMAGE_NAME $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
+docker push $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
   
   
 ### 4. Deploy To Kubernetes/Google Cloud Services
