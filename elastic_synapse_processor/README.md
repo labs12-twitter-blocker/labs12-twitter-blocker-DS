@@ -4,6 +4,7 @@
   * Google Cloud Bucket
   * Dockerhub Account
   * Kompose (link to kompose DL)
+  * Google Cloud SDK (link to SDK)
   
 
 
@@ -74,7 +75,9 @@ docker push $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
   gcloud config set container/cluster bert-cluster
 gcloud container clusters get-credentials bert-cluster --zone us-east1-b --project bert-239819
 kompose convert --stdout | kubectl apply -f -
-kubectl get service # get service IPs
+
+# get service IPs
+kubectl get service 
 ```
   
   
