@@ -3,6 +3,7 @@
   * Google Cloud Services Account
   * Google Cloud Bucket
   * Dockerhub Account
+  * Kompose (link to kompose DL)
   
 
 
@@ -61,10 +62,21 @@ gsutil cp gs://cloud-tpu-checkpoints/bert/uncased_L-12_H-768_A-12/vocab.txt asse
 docker build -t $USER/$CLIENT_IMAGE_NAME .
 docker tag $USER/$CLIENT_IMAGE_NAME $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
 docker push $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
+ ```
+ 
+### 4. Create Project Google Cloud Services
+
+### 5. Create new Kubernetes Cluster on Google Cloud Services
   
+### 6. Deploy To Kubernetes/Google Cloud Services
+  #### Run these commands locally
+  ```
+  gcloud config set container/cluster bert-cluster
+gcloud container clusters get-credentials bert-cluster --zone us-east1-b --project bert-239819
+kompose convert --stdout | kubectl apply -f -
+kubectl get service # get service IPs
+```
   
-### 4. Deploy To Kubernetes/Google Cloud Services
-  #### TODO: ADD FURTHER DETAILS/INSTRUCTION
   
 
 
