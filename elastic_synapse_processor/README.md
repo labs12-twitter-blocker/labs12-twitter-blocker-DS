@@ -1,5 +1,17 @@
 # Elastic Synapse Processor
-  ### Pre-Requisites:
+## Usage: 
+### Available Endpoints:
+
+
+
+
+
+
+
+
+
+# Development:
+  ### Development Pre-Requisites:
   * Google Cloud Services Account
   * Google Cloud Bucket
   * Dockerhub Account
