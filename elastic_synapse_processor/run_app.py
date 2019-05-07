@@ -61,7 +61,7 @@ def predict():
 
   inputExample = processor.serving_create_example([request_id, content['description']], 'test')
   feature = convert_single_example(0, inputExample, label_list, max_seq_length, tokenizer)
-  
+
   features = collections.OrderedDict()
   features["input_ids"] = create_int_feature(feature.input_ids)
   features["input_mask"] = create_int_feature(feature.input_mask)
@@ -74,8 +74,8 @@ def predict():
   features["label_ids"] = create_int_feature(label_ids)
 
   tf_example = tf.train.Example(features=tf.train.Features(feature=features))
-  
-  
+
+
   model_input = tf_example.SerializeToString()
 
   # Send request
@@ -104,7 +104,7 @@ def predict():
             'insult':predict_response_dict['probabilities'][0][4],
             'identity_hate':predict_response_dict['probabilities'][0][5]}
 			}
-	return jsonify(label_dict)
+  return jsonify(label_dict)
 
 
 
