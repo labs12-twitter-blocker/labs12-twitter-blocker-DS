@@ -1,7 +1,7 @@
 version: '3'
 services:
   bert-toxic:
-    image: "chrisseiler96/tf_serving_bert_toxic:1556822021_v5"
+    image: "crawftv/tf_serving_bert_toxic:1556822021_v5"
     deploy:
       resources:
         limits:
@@ -16,7 +16,7 @@ services:
     labels:
       kompose.service.type: LoadBalancer
   toxic-client:
-    image: "chrisseiler96/bert_toxic_client:v5"
+    image: "crawftv/bert_toxic_client:v5"
     ports:
       - "5000:5000"
     depends_on:
