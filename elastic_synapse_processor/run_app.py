@@ -104,7 +104,7 @@ def predict():
             'insult':predict_response_dict['probabilities'][0][4],
             'identity_hate':predict_response_dict['probabilities'][0][5]}
 			}
-return jsonify(label_dict)
+	return jsonify(label_dict)
 
 
 
