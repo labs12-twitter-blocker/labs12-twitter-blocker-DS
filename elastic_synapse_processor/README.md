@@ -16,30 +16,32 @@
 ### 2. Create Container For Model
   #### Run these commands in Google Cloud Services Console
 
-`IMAGE_NAME=tf_serving_bert_toxic
+```
+#Name of docker image to update/create
+IMAGE_NAME=tf_serving_bert_toxic   
 
+#Version for docker image - NOTE to update a model this must get incremented
 VER=1556822021_v5
 
+#Tensorflow Serving Model Name - NOTE this should always stay 'bert'
 MODEL_NAME=bert
 
+#Put your docker user here
 DOCKER_USER=chrisseiler96
 
 cd ~
-
 docker run -d --name $IMAGE_NAME tensorflow/serving
-
 mkdir ~/models
 
+#To use a different model change the path - NOTE this should point to a Saved_Model.pb and variables folder.
 gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1556822021 ~/models
 
 docker cp ~/models $IMAGE_NAME:/models/$MODEL_NAME
-
 docker commit --change "ENV MODEL_NAME $MODEL_NAME" $IMAGE_NAME $USER/$IMAGE_NAME
-
 docker tag $USER/$IMAGE_NAME $DOCKER_USER/$IMAGE_NAME:$VER
-
-docker push $DOCKER_USER/$IMAGE_NAME:$VER`
-  
+docker push $DOCKER_USER/$IMAGE_NAME:$VER
+```
+ 
   
 ### 3. Create Container for Flask Client
   #### TODO: ADD FURTHER DETAILS/INSTRUCTION
