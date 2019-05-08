@@ -1,5 +1,4 @@
 # Elastic Synapse Processor
-![img](https://i.imgur.com/VfvCPuH.jpg)
 
 ____
 
@@ -30,6 +29,8 @@ Table of Contents
 * [Useful Commands](#useful-commands)
 * [Debug](#debug)
 
+
+![img](https://i.imgur.com/VfvCPuH.jpg)
 
 ## API Usage: 
 ### Available Endpoints:
