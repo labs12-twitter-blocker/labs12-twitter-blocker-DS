@@ -64,7 +64,8 @@ ____
   
 ____
   
-### 2. Create Container For Model (Run these commands in Google Cloud Services Console)
+### 2. Create Container For Model
+#### (Run these commands in Google Cloud Services Console)
 ____
 
 #### Login with Docker
@@ -100,7 +101,8 @@ docker push $DOCKER_USER/$IMAGE_NAME:$VER
  
 ____
 
-### 3. Create Container for Flask Client( Run these commands in Google Cloud Services Console)
+### 3. Create Container for Flask Client
+#### (Run these commands in Google Cloud Services Console)
 ____
 
 
@@ -120,7 +122,7 @@ docker push $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
 
   
 ### 4. Deploy To Kubernetes/Google Cloud Services
-  #### Run these commands locally
+  #### (Run these commands locally)
   ```
   gcloud config set container/cluster bert-cluster
 gcloud container clusters get-credentials bert-cluster --zone us-east1-b --project bert-239819
