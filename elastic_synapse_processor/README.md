@@ -25,9 +25,9 @@ Table of Contents
 
 ## API Usage: 
 ### Available Endpoints:
-#### Toxic Comments TODO: ADD ENDPOINT INSTRUCTIONS
+#### Toxic Comments Endpoint: 
 ![img2](https://i.imgur.com/epVS7Hf.png)
-
+##### TODO: ADD INSTRUCTIONS
 
 
 
