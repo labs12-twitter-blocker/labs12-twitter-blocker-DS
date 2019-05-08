@@ -6,7 +6,7 @@ import requests
 import sys
 
 def bert_request(tweet_text):
-    data = {"description":"i hate this stuff"}
+    data = {"description":tweet_text}
     headers= {'Content-type':"application/json",
                "cache-control":"no-cache"
               }
