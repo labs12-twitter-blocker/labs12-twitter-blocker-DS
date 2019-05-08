@@ -1,4 +1,5 @@
 <h1 align="center">Elastic Synapse Processor</h1>
+***This repository describes the architechture and development of the Elastic Synapse Processer (ESP).***
 
 <p align="center">
     <img src="https://github.com/chrisseiler96/gitignore/blob/master/9q0v.gif?raw=true" wwidth=480 height=360.000>
@@ -9,7 +10,6 @@
 
 
 
-***This repository describes the architechture and development of the Elastic Synapse Processer (ESP).***
 
 The Elastic Synapse Processor is a framework for quickly creating and deploying Neural Network endpoints in an effiecient pipeline suited to scale for enterprise applications.
 
