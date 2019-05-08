@@ -1,7 +1,7 @@
 <h1 align="center">Elastic Synapse Processor</h1>
 
 <p align="center">
-    <img src="https://i.gifer.com/9q0v.gif" wwidth=480 height=360.000>
+    <img src="https://github.com/chrisseiler96/gitignore/blob/master/9q0v.gif?raw=true" wwidth=480 height=360.000>
 </p>
 
 <p align="center">
