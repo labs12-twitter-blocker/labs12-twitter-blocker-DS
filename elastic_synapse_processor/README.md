@@ -68,7 +68,8 @@ docker tag $DOCKER_USER/$IMAGE_NAME $DOCKER_USER/$IMAGE_NAME:$VER
 docker push $DOCKER_USER/$IMAGE_NAME:$VER
 ```
  
-  
+____
+
 ### 3. Create Container for Flask Client( Run these commands in Google Cloud Services Console)
 ____
 
