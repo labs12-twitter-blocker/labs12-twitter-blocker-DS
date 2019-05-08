@@ -100,9 +100,33 @@ ____
 #### Put your docker user here
 `DOCKER_USER=       {your docker user} `
 
+
+
+
+`TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2`
+
+`git clone https://github.com/tensorflow/serving`
+
+```
+cd serving && \
+  docker build --pull -t $DOCKER_USER/tensorflow-serving-devel:$VER \ 
+  --build-arg TF_SERVING_BUILD_OPTIONS="${TF_SERVING_BUILD_OPTIONS}" \
+  -f tensorflow_serving/tools/docker/Dockerfile.devel .
+
+cd serving && \
+  docker build -t $DOCKER_USER/tensorflow-serving:$VER \
+  --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel:$VER \
+-f tensorflow_serving/tools/docker/Dockerfile .
+```
+
+
+
+
+
+
 ```
 cd ~
-docker run -d --name $IMAGE_NAME tensorflow/serving
+docker run -d --name $IMAGE_NAME $DOCKER_USER/tensorflow-serving:$VER
 mkdir ~/models
 ```
 
@@ -160,6 +184,29 @@ kubectl get service
 
 
 # Useful Commands
+
+
+
+
+
+#Experimental
+TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2 --tensorflow_intra_op_parallelism=4 --tensorflow_inter_op_parallelism=4"
+#Experimental
+
+TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2
+
+git clone https://github.com/tensorflow/serving
+
+cd serving && \
+  docker build --pull -t $DOCKER_USER/tensorflow-serving-devel:$VER \ 
+  --build-arg TF_SERVING_BUILD_OPTIONS="${TF_SERVING_BUILD_OPTIONS}" \
+  -f tensorflow_serving/tools/docker/Dockerfile.devel .
+
+cd serving && \
+  docker build -t $DOCKER_USER/tensorflow-serving:$VER \
+  --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel:$VER \
+-f tensorflow_serving/tools/docker/Dockerfile .
+
 
 # Debug
 
