@@ -56,6 +56,7 @@ Table of Contents
 * Create new Kubernetes Cluster on Google Cloud Service
 * Create Project Google Cloud Services    
 
+____
 
 ### 1. Model Training: 
   https://colab.research.google.com/drive/1X2zP-C3os4vt0jlJ_OQ_u5kq6pGErPd3
