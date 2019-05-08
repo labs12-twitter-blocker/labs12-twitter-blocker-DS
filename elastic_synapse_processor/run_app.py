@@ -1,4 +1,3 @@
-
 import grpc
 import tensorflow as tf
 
@@ -19,8 +18,7 @@ from tensorflow.core.framework import tensor_pb2
 from tensorflow.core.framework import tensor_shape_pb2
 from tensorflow.core.framework import types_pb2
 
-from flask import Flask
-from flask import request
+from flask import Flask, request, jsonify
 
 import logging
 
@@ -63,7 +61,7 @@ def predict():
 
   inputExample = processor.serving_create_example([request_id, content['description']], 'test')
   feature = convert_single_example(0, inputExample, label_list, max_seq_length, tokenizer)
-  
+
   features = collections.OrderedDict()
   features["input_ids"] = create_int_feature(feature.input_ids)
   features["input_mask"] = create_int_feature(feature.input_mask)
@@ -76,8 +74,8 @@ def predict():
   features["label_ids"] = create_int_feature(label_ids)
 
   tf_example = tf.train.Example(features=tf.train.Features(feature=features))
-  
-  
+
+
   model_input = tf_example.SerializeToString()
 
   # Send request
@@ -98,19 +96,18 @@ def predict():
   keys = [k for k in predict_response_dict]
 
 
-  label_dict={'toxic':predict_response_dict['probabilities'][0][0],
+  label_dict={"results":
+			{'toxic':predict_response_dict['probabilities'][0][0],
             'severe_toxic':predict_response_dict['probabilities'][0][1] ,
             'obscene':predict_response_dict['probabilities'][0][2],
             'threat':predict_response_dict['probabilities'][0][3],
             'insult':predict_response_dict['probabilities'][0][4],
             'identity_hate':predict_response_dict['probabilities'][0][5]}
+			}
+  return jsonify(label_dict)
 
 
 
-  pretty_result = "Prediction{}: "
-  pretty_result = pretty_result.format(label_dict)
-  #app.logger.info("Predicted Label: %s", label_list[result[0]])
-  return pretty_result
 
 dtype_to_number = {
     'DT_INVALID': 0,
