@@ -1,5 +1,7 @@
 <h1 align="center">Elastic Synapse Processor</h1>
 
+<div style="padding-top:75.000%;position:relative;"><iframe src="https://gifer.com/embed/9q0v" width="100%" height="100%" style='position:absolute;top:0;left:0;' frameBorder="0" allowFullScreen></iframe></div><p><a href="https://gifer.com">via GIFER</a></p>
+
 
 <h2 align="center">What is it?</h2>
 
