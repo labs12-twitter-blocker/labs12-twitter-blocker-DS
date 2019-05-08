@@ -137,7 +137,14 @@ kompose convert --stdout | kubectl apply -f -
 kubectl get service 
 ```
   
-  
+# Add ML Endpoint
+
+# Update Client
+
+
+# Useful Commands
+
+# Debug
 
 
 
