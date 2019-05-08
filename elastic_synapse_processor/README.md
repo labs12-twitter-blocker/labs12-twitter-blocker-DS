@@ -5,7 +5,7 @@ ____
 
 # Introduction
 
-*This repository describes the architechture and development of the Elastic Synapse Processer (ESP).*
+***This repository describes the architechture and development of the Elastic Synapse Processer (ESP).***
 
 The Elastic Synapse Processor is a framework for quickly creating and deploying Neural Network endpoints in an effiecient pipeline suited to scale for enterprise applications.
 
