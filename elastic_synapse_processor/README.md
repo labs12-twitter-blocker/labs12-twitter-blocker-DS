@@ -7,7 +7,7 @@
 
 The Elastic Synapse Processor is a framework for quickly creating and deploying Neural Network endpoints in an effiecient pipeline suited to scale for enterprise applications.
 
-The Elastic Synapse Processor is designed around Google's BERT and makes use of transfer learning to quickly reach state of the art performance on new language processing tasks. The use of transfer learning also reduces the amount of training data required to create highly performant models.
+The Elastic Synapse Processor is designed around [Google's BERT](https://github.com/google-research/bert) and makes use of transfer learning to quickly reach state of the art performance on new language processing tasks. The use of transfer learning also reduces the amount of training data required to create highly performant models.
 
 
 
