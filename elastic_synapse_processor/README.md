@@ -67,12 +67,13 @@ docker push $DOCKER_USER/$IMAGE_NAME:$VER
 ```
  
   
-### 3. Create Container for Flask Client
-#### Run these commands in Google Cloud Services Console
+### 3. Create Container for Flask Client( Run these commands in Google Cloud Services Console)
+____
 
+
+#### Note You can use a custom repo here, but it must be a fork from chrisseiler96/bert-client-server-tests.
+#### This includes necessary files for creating docker container/dependencies
 ```
-#Note You can use a custom repo here, but it must be a fork from chrisseiler96/bert-client-server-tests.
-#This includes necessary files for creating docker container/dependencies
 git clone https://github.com/chrisseiler96/bert-client-server-tests.git
 
 cd ~/bert-client-server-tests
