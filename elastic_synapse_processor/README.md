@@ -8,7 +8,6 @@ ____
 Table of Contents
 =================
 
-* [Elastic Synapse Processor](#elastic-synapse-processor)
 * [API Usage:](#api-usage)
     * [Available Endpoints:](#available-endpoints)
 * [Development:](#development)
