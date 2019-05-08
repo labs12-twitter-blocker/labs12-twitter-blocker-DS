@@ -32,8 +32,10 @@ ____
   https://colab.research.google.com/drive/1X2zP-C3os4vt0jlJ_OQ_u5kq6pGErPd3
   #### TODO : ADD FURTHER DETAILS/INSTRUCTION
   
+____
+  
 ### 2. Create Container For Model (Run these commands in Google Cloud Services Console)
-
+____
 
 #### Login with Docker
 `docker login`
@@ -71,8 +73,8 @@ docker push $DOCKER_USER/$IMAGE_NAME:$VER
 ____
 
 
-#### Note You can use a custom repo here, but it must be a fork from chrisseiler96/bert-client-server-tests.
-#### This includes necessary files for creating docker container/dependencies
+#### Note: You can use a custom repo here, but it must be a fork from chrisseiler96/bert-client-server-tests
+#### This includes necessary files for creating docker container/dependencies.
 ```
 git clone https://github.com/chrisseiler96/bert-client-server-tests.git
 
