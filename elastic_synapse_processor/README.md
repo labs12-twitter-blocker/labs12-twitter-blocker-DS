@@ -3,6 +3,14 @@
 
 ____
 
+# Introduction
+
+*This repository describes the architechture and development of the Elastic Synapse Processer (ESP).*
+
+The Elastic Synapse Processor is a framework for quickly creating and deploying Neural Network endpoints in an effiecient pipeline suited to scale for enterprise applications.
+
+The Elastic Synapse Processor is designed around Google's BERT and makes use of transfer learning to quickly reach state of the art performance on new language processing tasks. The use of transfer learning also reduces the amount of training data required to create highly performant models.
+
 
 
 Table of Contents
