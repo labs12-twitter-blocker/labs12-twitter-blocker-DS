@@ -49,6 +49,13 @@ Table of Contents
 
 
 ## Model Training and Deployment Pipeline (From Scratch):
+ 
+ Create Project Google Cloud Services
+
+### Before Beginning: 
+* Create new Kubernetes Cluster on Google Cloud Service
+* Create Project Google Cloud Services    
+
 
 ### 1. Model Training: 
   https://colab.research.google.com/drive/1X2zP-C3os4vt0jlJ_OQ_u5kq6pGErPd3
@@ -109,12 +116,9 @@ docker build -t $DOCKER_USER/$CLIENT_IMAGE_NAME .
 docker tag $DOCKER_USER/$CLIENT_IMAGE_NAME $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
 docker push $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
  ```
- 
-### 4. Create Project Google Cloud Services
 
-### 5. Create new Kubernetes Cluster on Google Cloud Services
   
-### 6. Deploy To Kubernetes/Google Cloud Services
+### 4. Deploy To Kubernetes/Google Cloud Services
   #### Run these commands locally
   ```
   gcloud config set container/cluster bert-cluster
