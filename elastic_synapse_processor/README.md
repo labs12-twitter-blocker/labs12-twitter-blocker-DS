@@ -1,7 +1,9 @@
 <h1 align="center">Elastic Synapse Processor</h1>
 
 
-# What is it?
+<h2 align="center">What is it?</h2>
+
+
 
 ***This repository describes the architechture and development of the Elastic Synapse Processer (ESP).***
 
