@@ -1,6 +1,5 @@
 # Elastic Synapse Processor
 
-____
 
 # Introduction
 
