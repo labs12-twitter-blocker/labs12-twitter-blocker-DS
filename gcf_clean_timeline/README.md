@@ -1,5 +1,10 @@
+# Clean Timeline
+This subdirectory has one purpose, to show the toxicity of each tweet in a logged-in user's timeline.
+
+Hit the url with a POST request and the proper credentials and the function will output some important tweet metadata and the BERT model output
+
 ## TODO
-* assess whether or not to hardcode URL's, what are alternatives
+* assess whether or not to hardcode URL's, what are alternatives?
 
 
 ### Python code for hitting api
@@ -7,7 +12,7 @@
 from python-decouple import config
 import json
 
-#TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET saved as a .env for local testing,\
+#TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET saved as a .env for local testing,
 #pass it some other way for production.
 
 headers = {"Content-Type":"application/json"}
@@ -19,33 +24,26 @@ r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/fu
                   data=json.dumps(body))
 ```
 ### Returns
-```[{'tweet': {'user_id': 858716964,
-   'user_name': 'PFTCommenter',
-   'tweet': 'Very unfootball guy move by Dabo to be in canada. Guarentee u Saban dosent even know what a passport is',
-   'tweet_id': '1125941726739406848',
-   'bert_output': {'results': {'identity_hate': 0.0009892451344057918,
-     'insult': 0.003654920496046543,
-     'obscene': 0.028357096016407013,
-     'severe_toxic': 0.0008791135041974485,
-     'threat': 0.0010434689465910196,
-     'toxic': 0.8275536894798279}}}},
- {'tweet': {'user_id': 3363584909,
-   'user_name': 'Judea Pearl',
-   'tweet': 'Faculty of New York University: Oppose Academic Boycott of NYU Tel Aviv - Sign the Petition! https://t.co/yHcYCyax2A via @Change',
-   'tweet_id': '1125941173887979522',
-   'bert_output': {'results': {'identity_hate': 0.0009892451344057918,
-     'insult': 0.003654920496046543,
-     'obscene': 0.028357096016407013,
-     'severe_toxic': 0.0008791135041974485,
-     'threat': 0.0010434689465910196,
-     'toxic': 0.8275536894798279}}}},
- {'tweet': {'user_id': 20844341,
-   'user_name': 'Patrick McKenzie',
-   'tweet': 'A legitimately hard question to answer: does the Bitcoin community pay more for miners to secure the blockchain via seigniorage or for informally organized web application bug bounties.\n\nNot snarking; those may be similar magnitude numbers. https://t.co/nw3VFgHPZK',
-   'tweet_id': '1125941004576550912',
-   'bert_output': {'results': {'identity_hate': 0.0009892451344057918,
-     'insult': 0.003654920496046543,
-     'obscene': 0.028357096016407013,
-     'severe_toxic': 0.0008791135041974485,
-     'threat': 0.0010434689465910196,
-     'toxic': 0.8275536894798279}}}}]
+*returning only 2 examples for brevity*
+``` 
+[{'user_id': 20178419,
+  'user_name': 'Charlie Warzel',
+  'tweet': 'Wanted to share this from a reader who fought to bring broadband internet to her rural area. Privacy fears have her questioning the promise of the technology in the first place. \nhttps://t.co/rQFAzedSsy https://t.co/sWQ4tVR0nL',
+  'tweet_id': '1125942774870626304',
+  'bert_output': {'results': {'identity_hate': 0.00014293211279436946,
+    'insult': 0.00020261162717361003,
+    'obscene': 0.00015373028873000294,
+    'severe_toxic': 0.00013324874453246593,
+    'threat': 0.00010578848741715774,
+    'toxic': 0.00031644446426071227}}},
+ {'user_id': 858716964,
+  'user_name': 'PFTCommenter',
+  'tweet': 'Very unfootball guy move by Dabo to be in canada. Guarentee u Saban dosent even know what a passport is',
+  'tweet_id': '1125941726739406848',
+  'bert_output': {'results': {'identity_hate': 9.91309862001799e-05,
+    'insult': 0.00024265862884931266,
+    'obscene': 0.0002427479630568996,
+    'severe_toxic': 9.135981963481754e-05,
+    'threat': 5.7972181821241975e-05,
+    'toxic': 0.0008805064135231078}}}]
+```
