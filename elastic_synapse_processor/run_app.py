@@ -1,5 +1,6 @@
 import grpc
 import tensorflow as tf
+import time
 
 #import run_multilabels_classifier as classifiers
 
@@ -37,10 +38,23 @@ def hello():
 @app.route("/", methods = ['POST'])
 def predict():
   # MODEL PARAMS
+
+  logging.basicConfig(level=logging.DEBUG,format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+  logger = logging.getLogger(__name__)
+  self.logger.info('Sending request to tfserving model')
+  
   max_seq_length = 128
 
+	
+   # Create gRPC client and request
+  t = time.time()	
   channel = grpc.insecure_channel("bert-toxic:8500")
+  self.logger.debug('Establishing insecure channel took: {}'.format(time.time() - t))
+
+  t = time.time()
   stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+  self.logger.debug('Creating stub took: {}'.format(time.time() - t))
+
 
   # Parse Description
   tokenizer = tokenization.FullTokenizer(
@@ -49,19 +63,23 @@ def predict():
   label_list = [0,0,0,0,0,0]
 
 
-
-
-  # logging.basicConfig(level=logging.DEBUG,format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
-  # logger = logging.getLogger(__name__)
-  # logger.info('getting json')
+  t = time.time()
   content = request.get_json()
-  #logger.info('JSON: {}'.format(content))
+  self.logger.debug('Parsing Incoming JSON took: {}'.format(time.time() - t))
+
+  
   request_id = str(random.randint(1, 9223372036854775807))
 
-
+  t = time.time()
   inputExample = processor.serving_create_example([request_id, content['description']], 'test')
+  self.logger.debug('Create Input Example Took: {}'.format(time.time() - t))
+	
+  t = time.time()	
   feature = convert_single_example(0, inputExample, label_list, max_seq_length, tokenizer)
+  self.logger.debug('Feature Creation Took: {}'.format(time.time() - t))
 
+
+  t = time.time()
   features = collections.OrderedDict()
   features["input_ids"] = create_int_feature(feature.input_ids)
   features["input_mask"] = create_int_feature(feature.input_mask)
@@ -78,6 +96,10 @@ def predict():
 
   model_input = tf_example.SerializeToString()
 
+  self.logger.debug('Serialize Features Took: {}'.format(time.time() - t))
+
+  t = time.time()
+	
   # Send request
   # See prediction_service.proto for gRPC request/response details.
   model_request = predict_pb2.PredictRequest()
@@ -89,13 +111,21 @@ def predict():
     dtype=types_pb2.DT_STRING,
     tensor_shape=tensor_shape_proto,
     string_val=[model_input])
+  self.logger.debug('Format Tensors Took: {}'.format(time.time() - t))
 
+	
+	
+	
+	
+  t = time.time()
   model_request.inputs['examples'].CopyFrom(tensor_proto)
   result = stub.Predict(model_request, 10.0)  # 10 secs timeout
   predict_response_dict = predict_response_to_dict(result)
   keys = [k for k in predict_response_dict]
+  self.logger.debug('Receive and Iterate Took: {}'.format(time.time() - t))
 
-
+	
+  t = time.time()
   label_dict={"results":
 			{'toxic':predict_response_dict['probabilities'][0][0],
             'severe_toxic':predict_response_dict['probabilities'][0][1] ,
@@ -104,6 +134,9 @@ def predict():
             'insult':predict_response_dict['probabilities'][0][4],
             'identity_hate':predict_response_dict['probabilities'][0][5]}
 			}
+  self.logger.debug('Create Label Dict Took: {}'.format(time.time() - t))
+
+	
   return jsonify(label_dict)
 
 
