@@ -1,4 +1,4 @@
-# Elastic Synapse Processor
+<h1 align="center">Elastic Synapse Processor</h1>
 
 
 # Introduction
