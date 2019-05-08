@@ -6,7 +6,7 @@
     <img src="https://github.com/chrisseiler96/gitignore/blob/master/9q0v.gif?raw=true" wwidth=480 height=360.000>
 </p>
 
-<p align="center"> This repository describes the architechture and development of the Elastic Synapse Processer (ESP). 
+<p align="center"> This repository describes the architecture and development of the Elastic Synapse Processer (ESP). 
 </p>
 
 <h2 align="center">What is it?</h2>
