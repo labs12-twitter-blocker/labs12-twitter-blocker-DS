@@ -1,12 +1,13 @@
 <h1 align="center">Elastic Synapse Processor</h1>
 
-<p align="center"> This repository describes the architechture and development of the Elastic Synapse Processer (ESP). 
-</p>
+
 
 <p align="center">
     <img src="https://github.com/chrisseiler96/gitignore/blob/master/9q0v.gif?raw=true" wwidth=480 height=360.000>
 </p>
 
+<p align="center"> This repository describes the architechture and development of the Elastic Synapse Processer (ESP). 
+</p>
 
 <h2 align="center">What is it?</h2>
 
