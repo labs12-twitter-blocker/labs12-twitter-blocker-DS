@@ -9,6 +9,8 @@
 <p align="center"> This repository describes the architecture and development of the Elastic Synapse Processer (ESP). 
 </p>
 
+____
+
 <h2 align="center">What is it?</h2>
 
 
