@@ -1,4 +1,7 @@
 # Elastic Synapse Processor
+![img](https://i.imgur.com/VfvCPuH.jpg)
+
+
 ## API Usage: 
 ### Available Endpoints:
 #### Toxic Comments TODO: ADD ENDPOINT INSTRUCTIONS
