@@ -48,8 +48,6 @@ Table of Contents
 
 
 ## Model Training and Deployment Pipeline (From Scratch):
- 
- Create Project Google Cloud Services
 
 ### Before Beginning: 
 * Create new Kubernetes Cluster on Google Cloud Service
