@@ -41,8 +41,8 @@ Table of Contents
   * Google Cloud Services Account
   * Google Cloud Bucket
   * Dockerhub Account
-  * Kompose (link to kompose DL)
-  * Google Cloud SDK (link to SDK)
+  * Kompose (https://github.com/kubernetes/kompose)
+  * Google Cloud SDK (https://cloud.google.com/sdk/)
   
 
 
