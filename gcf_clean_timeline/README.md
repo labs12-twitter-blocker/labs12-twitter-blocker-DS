@@ -3,6 +3,7 @@ This subdirectory has one purpose, to show the toxicity of each tweet in a logge
 
 Hit the url with a POST request and the proper credentials and the function will output some important tweet metadata and the BERT model output
 
+Run time ~ 31 seconds for 20 tweets
 ## TODO
 * assess whether or not to hardcode URL's, what are alternatives?
 
