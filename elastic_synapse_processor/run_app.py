@@ -43,7 +43,7 @@ def predict():
   logger = logging.getLogger(__name__)
   logger.info('Sending request to tfserving model')
   
-  max_seq_length = 128
+  
 
 	
    # Create gRPC client and request
@@ -67,7 +67,8 @@ def predict():
   content = request.get_json()
   logger.debug('Parsing Incoming JSON took: {}'.format(time.time() - t))
 
-  
+  max_seq_length = content['max_seq_length']
+
   request_id = str(random.randint(1, 9223372036854775807))
 
   t = time.time()
