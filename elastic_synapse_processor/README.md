@@ -1,6 +1,7 @@
 # Elastic Synapse Processor
 ![img](https://i.imgur.com/VfvCPuH.jpg)
 
+____
 
 ## API Usage: 
 ### Available Endpoints:
