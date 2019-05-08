@@ -92,7 +92,7 @@ ____
 `IMAGE_NAME=tf_serving_bert_toxic`  
 
 #### Version for docker image - NOTE to update a model this must get incremented
-`VER=1556822021_v5`
+`VER=1556822021_v0.04`
 
 #### Tensorflow Serving Model Name - NOTE this should always stay 'bert'
 `MODEL_NAME=bert`
