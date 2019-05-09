@@ -92,7 +92,7 @@ ____
 `IMAGE_NAME=tf_serving_bert_toxic`  
 
 #### Version for docker image - NOTE to update a model this must get incremented
-`VER=1556822021_v0.04`
+`VER=1557429385_v0.01`
 
 #### Tensorflow Serving Model Name - NOTE this should always stay 'bert'
 `MODEL_NAME=bert`
@@ -120,7 +120,7 @@ mkdir ~/models
 
 
 #### To use a different model change the path - NOTE this should point to a Saved_Model.pb and variables folder.
-`gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1556822021 ~/models`
+`gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1557429385 ~/models`
 
 ```
 docker cp ~/models $IMAGE_NAME:/models/$MODEL_NAME
