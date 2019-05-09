@@ -101,13 +101,23 @@ ____
 `DOCKER_USER=       {your docker user} `
 
 
-
+#### GPU
 
 ```
 cd ~
-docker run -d --name $IMAGE_NAME $DOCKER_USER/tensorflow-serving:cpu3
+docker run -d --name $IMAGE_NAME labs12twitterblocker/tensorflow-serving-gpu:GPUv1
 mkdir ~/models
 ```
+
+#### CPU
+
+```
+cd ~
+docker run -d --name $IMAGE_NAME labs12twitterblocker/tensorflow-serving:cpu3
+mkdir ~/models
+```
+
+
 
 #### To use a different model change the path - NOTE this should point to a Saved_Model.pb and variables folder.
 `gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1556822021 ~/models`
@@ -177,6 +187,7 @@ TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.
 
 
 # CREATE OPTIMIZED TF-SERVING CONTAINER
+## CPU (RUN THIS LOCAL)
 
 TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2`
 
@@ -192,6 +203,25 @@ cd serving && \
   docker build -t $DOCKER_USER/tensorflow-serving:$VER \
   --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel:$VER \
 -f tensorflow_serving/tools/docker/Dockerfile .
+```
+
+## GPU (RUN THIS LOCAL-NVIDIA GPU + DRIVERS + CUDA REQUIRED)
+
+Google Cloud Hardware Optimizations
+`TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2"`
+
+`git clone https://github.com/tensorflow/serving`
+
+ `VER=GPUv1`
+ 
+ `cd serving`
+
+```
+docker build --pull -t $DOCKER_USER/tensorflow-serving-devel-gpu:$VER --build-arg TF_SERVING_BUILD_OPTIONS="${TF_SERVING_BUILD_OPTIONS}" -f tensorflow_serving/tools/docker/Dockerfile.devel-gpu .
+```
+
+```
+docker build -t $DOCKER_USER/tensorflow-serving-gpu:$VER --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel-gpu:$VER -f tensorflow_serving/tools/docker/Dockerfile.gpu .
 ```
 
 
