@@ -177,6 +177,7 @@ TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.
 
 
 # CREATE OPTIMIZED TF-SERVING CONTAINER
+## CPU (RUN THIS LOCAL)
 
 TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2`
 
@@ -192,6 +193,25 @@ cd serving && \
   docker build -t $DOCKER_USER/tensorflow-serving:$VER \
   --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel:$VER \
 -f tensorflow_serving/tools/docker/Dockerfile .
+```
+
+## GPU (RUN THIS LOCAL-NVIDIA GPU + DRIVERS + CUDA REQUIRED)
+
+Google Cloud Hardware Optimizations
+`TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2"`
+
+`git clone https://github.com/tensorflow/serving`
+
+ `VER=GPUv1`
+ 
+ `cd serving`
+
+```
+docker build --pull -t $DOCKER_USER/tensorflow-serving-devel-gpu:$VER --build-arg TF_SERVING_BUILD_OPTIONS="${TF_SERVING_BUILD_OPTIONS}" -f tensorflow_serving/tools/docker/Dockerfile.devel-gpu .
+```
+
+```
+docker build -t $DOCKER_USER/tensorflow-serving-gpu:$VER --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel-gpu:$VER -f tensorflow_serving/tools/docker/Dockerfile.gpu .
 ```
 
 
