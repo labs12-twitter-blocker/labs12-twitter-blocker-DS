@@ -1,22 +1,22 @@
 version: '3'
 services:
   bert-toxic:
-    image: "labs12twitterblocker/tf_serving_bert_toxic:1556822021_v0.07"
+    image: "labs12twitterblocker/tf_serving_bert_toxic:1557439480v0.1" 
     deploy:
       resources:
         limits:
           cpus: "4.0"
-          memory: "800M"
+          memory: "1600M"
         reservations:
-          cpus: "1.0"
-          memory: "100M"
+          cpus: "3.0"
+          memory: "1200M"
     ports:
       - "8500:8500"
       - "8501:8501"
     labels:
       kompose.service.type: LoadBalancer
   toxic-client:
-    image: "labs12twitterblocker/bert_toxic_client:v0.7"
+    image: "labs12twitterblocker/bert_toxic_client:v0.9"
     ports:
       - "5000:5000"
     depends_on:
