@@ -101,13 +101,23 @@ ____
 `DOCKER_USER=       {your docker user} `
 
 
-
+#### GPU
 
 ```
 cd ~
-docker run -d --name $IMAGE_NAME $DOCKER_USER/tensorflow-serving:cpu3
+docker run -d --name $IMAGE_NAME labs12twitterblocker/tensorflow-serving-gpu:GPUv1
 mkdir ~/models
 ```
+
+#### CPU
+
+```
+cd ~
+docker run -d --name $IMAGE_NAME labs12twitterblocker/tensorflow-serving:cpu3
+mkdir ~/models
+```
+
+
 
 #### To use a different model change the path - NOTE this should point to a Saved_Model.pb and variables folder.
 `gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1556822021 ~/models`
