@@ -72,30 +72,37 @@ def predict():
   request_id = str(random.randint(1, 9223372036854775807))
 
   t = time.time()
-  inputExample = processor.serving_create_example([request_id, content['description']], 'test')
-  logger.debug('Create Input Example Took: {}'.format(time.time() - t))
+
+
+  input_strings = content['description']
+  model_inputs = []
+
+  for string in input_strings:
+    inputExample = processor.serving_create_example([request_id, string], 'test')
+    logger.debug('Create Input Example Took: {}'.format(time.time() - t))
 	
-  t = time.time()	
-  feature = convert_single_example(0, inputExample, label_list, max_seq_length, tokenizer)
-  logger.debug('Feature Creation Took: {}'.format(time.time() - t))
+    t = time.time()	
+    feature = convert_single_example(0, inputExample, label_list, max_seq_length, tokenizer)
+    logger.debug('Feature Creation Took: {}'.format(time.time() - t))
 
 
-  t = time.time()
-  features = collections.OrderedDict()
-  features["input_ids"] = create_int_feature(feature.input_ids)
-  features["input_mask"] = create_int_feature(feature.input_mask)
-  features["segment_ids"] = create_int_feature(feature.segment_ids)
-  features["is_real_example"] = create_int_feature([int(feature.is_real_example)])
-  if isinstance(feature.label_id, list):
-    label_ids = feature.label_id
-  else:
-    label_ids = [feature.label_id]
-  features["label_ids"] = create_int_feature(label_ids)
+    t = time.time()
+    features = collections.OrderedDict()
+    features["input_ids"] = create_int_feature(feature.input_ids)
+    features["input_mask"] = create_int_feature(feature.input_mask)
+    features["segment_ids"] = create_int_feature(feature.segment_ids)
+    features["is_real_example"] = create_int_feature([int(feature.is_real_example)])
+    if isinstance(feature.label_id, list):
+      label_ids = feature.label_id
+    else:
+      label_ids = [feature.label_id]
+    features["label_ids"] = create_int_feature(label_ids)
 
-  tf_example = tf.train.Example(features=tf.train.Features(feature=features))
+    tf_example = tf.train.Example(features=tf.train.Features(feature=features))
 
 
-  model_input = tf_example.SerializeToString()
+    model_input = tf_example.SerializeToString()
+    model_inputs.append(model_input)
 
   logger.debug('Serialize Features Took: {}'.format(time.time() - t))
 
@@ -106,12 +113,12 @@ def predict():
   model_request = predict_pb2.PredictRequest()
   model_request.model_spec.name = 'bert'
   model_request.model_spec.signature_name = 'serving_default'
-  dims = [tensor_shape_pb2.TensorShapeProto.Dim(size=1)]
+  dims = [tensor_shape_pb2.TensorShapeProto.Dim(size=len(model_inputs))]
   tensor_shape_proto = tensor_shape_pb2.TensorShapeProto(dim=dims)
   tensor_proto = tensor_pb2.TensorProto(
     dtype=types_pb2.DT_STRING,
     tensor_shape=tensor_shape_proto,
-    string_val=[model_input])
+    string_val=[tweet for tweet in model_inputs])
   logger.debug('Format Tensors Took: {}'.format(time.time() - t))
 
 	
