@@ -105,7 +105,7 @@ ____
 
 ```
 cd ~
-docker run -d --name $IMAGE_NAME $DOCKER_USER/tensorflow-serving:cpu
+docker run -d --name $IMAGE_NAME $DOCKER_USER/tensorflow-serving:cpu3
 mkdir ~/models
 ```
 
