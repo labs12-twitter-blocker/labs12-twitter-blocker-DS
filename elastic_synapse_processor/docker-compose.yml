@@ -16,7 +16,7 @@ services:
     labels:
       kompose.service.type: LoadBalancer
   toxic-client:
-    image: "labs12twitterblocker/bert_toxic_client:v0.3"
+    image: "labs12twitterblocker/bert_toxic_client:v0.7"
     ports:
       - "5000:5000"
     depends_on:
