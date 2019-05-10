@@ -144,14 +144,24 @@ def predict():
 
 	
   t = time.time()
-  label_dict={"results":
-			{'toxic':predict_response_dict['probabilities'][0][0],
-            'severe_toxic':predict_response_dict['probabilities'][0][1] ,
-            'obscene':predict_response_dict['probabilities'][0][2],
-            'threat':predict_response_dict['probabilities'][0][3],
-            'insult':predict_response_dict['probabilities'][0][4],
-            'identity_hate':predict_response_dict['probabilities'][0][5]}
-			}
+
+  response_list = []
+
+  for response in predict_response_dict['probabilities']:
+    format_dict = {
+      'toxic':response[0],
+      'severe_toxic':response[1] ,
+      'obscene':response[2],
+      'threat':response[3],
+      'insult':response[4],
+      'identity_hate':response[5]
+    }
+    response_list.append(format_dict)
+
+
+
+
+  label_dict={"results": response_list}
   logger.debug('Create Label Dict Took: {}'.format(time.time() - t))
 
 	
