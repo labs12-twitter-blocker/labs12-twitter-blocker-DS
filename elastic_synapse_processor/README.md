@@ -92,7 +92,7 @@ ____
 `IMAGE_NAME=tf_serving_bert_toxic`  
 
 #### Version for docker image - NOTE to update a model this must get incremented
-`VER=1556822021_v5`
+`VER=1557429385_v0.01`
 
 #### Tensorflow Serving Model Name - NOTE this should always stay 'bert'
 `MODEL_NAME=bert`
@@ -100,14 +100,27 @@ ____
 #### Put your docker user here
 `DOCKER_USER=       {your docker user} `
 
+
+#### GPU
+
 ```
 cd ~
-docker run -d --name $IMAGE_NAME tensorflow/serving
+docker run -d --name $IMAGE_NAME labs12twitterblocker/tensorflow-serving-gpu:GPUv1
 mkdir ~/models
 ```
 
+#### CPU
+
+```
+cd ~
+docker run -d --name $IMAGE_NAME labs12twitterblocker/tensorflow-serving:cpu3
+mkdir ~/models
+```
+
+
+
 #### To use a different model change the path - NOTE this should point to a Saved_Model.pb and variables folder.
-`gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1556822021 ~/models`
+`gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1557429385 ~/models`
 
 ```
 docker cp ~/models $IMAGE_NAME:/models/$MODEL_NAME
@@ -160,6 +173,57 @@ kubectl get service
 
 
 # Useful Commands
+
+
+
+
+
+#Experimental
+TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2 --tensorflow_intra_op_parallelism=4 --tensorflow_inter_op_parallelism=4"
+#Experimental
+
+TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2
+
+
+
+# CREATE OPTIMIZED TF-SERVING CONTAINER
+## CPU (RUN THIS LOCAL)
+
+TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2`
+
+`git clone https://github.com/tensorflow/serving`
+
+```
+cd serving && \
+  docker build --pull -t $DOCKER_USER/tensorflow-serving-devel:$VER \ 
+  --build-arg TF_SERVING_BUILD_OPTIONS="${TF_SERVING_BUILD_OPTIONS}" \
+  -f tensorflow_serving/tools/docker/Dockerfile.devel .
+
+cd serving && \
+  docker build -t $DOCKER_USER/tensorflow-serving:$VER \
+  --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel:$VER \
+-f tensorflow_serving/tools/docker/Dockerfile .
+```
+
+## GPU (RUN THIS LOCAL-NVIDIA GPU + DRIVERS + CUDA REQUIRED)
+
+Google Cloud Hardware Optimizations
+`TF_SERVING_BUILD_OPTIONS="--copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-msse4.1 --copt=-msse4.2"`
+
+`git clone https://github.com/tensorflow/serving`
+
+ `VER=GPUv1`
+ 
+ `cd serving`
+
+```
+docker build --pull -t $DOCKER_USER/tensorflow-serving-devel-gpu:$VER --build-arg TF_SERVING_BUILD_OPTIONS="${TF_SERVING_BUILD_OPTIONS}" -f tensorflow_serving/tools/docker/Dockerfile.devel-gpu .
+```
+
+```
+docker build -t $DOCKER_USER/tensorflow-serving-gpu:$VER --build-arg TF_SERVING_BUILD_IMAGE=$DOCKER_USER/tensorflow-serving-devel-gpu:$VER -f tensorflow_serving/tools/docker/Dockerfile.gpu .
+```
+
 
 # Debug
 
