@@ -31,7 +31,7 @@ def process_tweet(full_tweet):
     tweet = tweet.strip()
     #make api request for toxicity analysis
 
-    tweet_info = {"tweet": 
+    tweet_info = {"tweet":
                      {"user_id": full_tweet.user.id,
                       "user_name" : full_tweet.user.name,
                       "tweet": full_tweet.full_text,
@@ -40,7 +40,7 @@ def process_tweet(full_tweet):
                     }
     return tweet_info
 
-def clean_timeline(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET):
+def clean_timeline(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET,since_id=None):
     # Create Twitter Connection
     twitter_auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'),config('TWITTER_CONSUMER_SECRET'))
     access_token = TWITTER_ACCESS_TOKEN
@@ -53,7 +53,8 @@ def clean_timeline(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET):
         home_timeline = TWITTER.home_timeline(count=32,
                                               tweet_mode='extended',
                                               exlude_rts=False,
-                                              exclude_replies=False)
+                                              exclude_replies=False,
+											  since_id=since_id)
         timeline = [ process_tweet(full_tweet)
                    for full_tweet in home_timeline]
         output = bert_request(timeline)
@@ -95,7 +96,12 @@ def process_request(request):
             TWITTER_ACCESS_TOKEN_SECRET = request_json['TWITTER_ACCESS_TOKEN_SECRET']
         else:
             raise ValueError("Missing a 'TWITTER_ACCESS_TOKEN_SECRET'")
-        wq
+       #optional param, defaults to None type if not specified, and is also
+	   #optionally None in function definition
+	   if request_json and 'since_id' in requesst_json:
+			since_id=request_json['since_id']
+	   else:
+			since_id = None
         # Call the function for the POST request.
         if request.method == 'POST':
             return clean_timeline(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET)
