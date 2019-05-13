@@ -121,7 +121,8 @@ mkdir ~/models
 
 #### To use a different model change the path - NOTE this should point to a Saved_Model.pb and variables folder.
 `gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1557429385 ~/models`
-
+##### Max Sequence Length 32:
+`gsutil cp -r  gs://not-another-bert-bucket/bert/export/multilabel/1557439480 ~/models`
 ```
 docker cp ~/models $IMAGE_NAME:/models/$MODEL_NAME
 docker commit --change "ENV MODEL_NAME $MODEL_NAME" $IMAGE_NAME $DOCKER_USER/$IMAGE_NAME
