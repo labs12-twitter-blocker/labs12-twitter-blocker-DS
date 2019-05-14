@@ -9,6 +9,7 @@ Run time ~ for 32 tweets: 6 seconds on a cold start, 3 when already turned on.
 
 
 ### Python code for hitting api
+##### 2 types of possible requests. With and without 'since_id'
 ```import requests
 from python-decouple import config
 import json
@@ -19,6 +20,19 @@ import json
 headers = {"Content-Type":"application/json"}
 body = {"TWITTER_ACCESS_TOKEN": config('TWITTER_ACCESS_TOKEN'),
         "TWITTER_ACCESS_TOKEN_SECRET": config('TWITTER_ACCESS_TOKEN_SECRET')
+        }
+r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/function-1",
+                  headers=headers,
+                  data=json.dumps(body))
+```
+
+```import requests
+from python-decouple import config
+import json
+headers = {"Content-Type":"application/json"}
+body = {"TWITTER_ACCESS_TOKEN": config('TWITTER_ACCESS_TOKEN'),
+        "TWITTER_ACCESS_TOKEN_SECRET": config('TWITTER_ACCESS_TOKEN_SECRET'),
+	"since_id":1126865912429043713
         }
 r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/function-1",
                   headers=headers,
