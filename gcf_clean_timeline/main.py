@@ -5,44 +5,53 @@ import json
 import requests
 import sys
 
+
 def bert_request(timeline):
     tweet_list = [tweet["tweet"]["tweet"] for tweet in timeline]
-    data = {"description":tweet_list, "max_seq_length":32}
-    headers= {'Content-type':"application/json",
-               "cache-control":"no-cache"
-              }
-    data= json.dumps(data)
-    results = requests.post("http://35.232.114.74:5000/", data = data, headers = headers)
-    output = [{"tweet":t,"bert_result": r} for t,r in zip(timeline,results.json()["results"])]
+    data = {"description": tweet_list, "max_seq_length": 32}
+    headers = {"Content-type": "application/json", "cache-control": "no-cache"}
+    data = json.dumps(data)
+    results = requests.post("http://35.232.114.74:5000/", data=data, headers=headers)
+    output = [
+        {"tweet": t, "bert_result": r}
+        for t, r in zip(timeline, results.json()["results"])
+    ]
     return output
+
 
 def process_tweet(full_tweet):
     tweet = full_tweet.full_text
-    #strip username
-    tweet = re.sub(r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)','',tweet)
-    #strip newlines and unicode characters that aren't formatted
-    tweet = re.sub(r'\n|&gt;|RT :','',tweet)
-    #strip twitter urls from tweets
-    tweet = re.sub(r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))https://t.co/([A-Za-z0-9-_,\']+)','',tweet)
-    #Remove emojis
-    RE_EMOJI = re.compile('[\U00010000-\U0010ffff]', flags=re.UNICODE)
-    tweet = RE_EMOJI.sub(r'', tweet)
-    #remove whitespace
+    # strip username
+    tweet = re.sub(r"(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", tweet)
+    # strip newlines and unicode characters that aren't formatted
+    tweet = re.sub(r"\n|&gt;|RT :", "", tweet)
+    # strip twitter urls from tweets
+    tweet = re.sub(
+        r"(?<=^|(?<=[^a-zA-Z0-9-_\.]))https://t.co/([A-Za-z0-9-_,\']+)", "", tweet
+    )
+    # Remove emojis
+    RE_EMOJI = re.compile("[\U00010000-\U0010ffff]", flags=re.UNICODE)
+    tweet = RE_EMOJI.sub(r"", tweet)
+    # remove whitespace
     tweet = tweet.strip()
-    #make api request for toxicity analysis
+    # make api request for toxicity analysis
 
-    tweet_info = {"tweet":
-                     {"user_id": full_tweet.user.id,
-                      "user_name" : full_tweet.user.name,
-                      "tweet": full_tweet.full_text,
-                      "tweet_id" : full_tweet.id_str
-                     }
-                    }
+    tweet_info = {
+        "tweet": {
+            "user_id": full_tweet.user.id,
+            "user_name": full_tweet.user.name,
+            "tweet": full_tweet.full_text,
+            "tweet_id": full_tweet.id_str,
+        }
+    }
     return tweet_info
 
-def clean_timeline(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET,since_id=None):
+
+def clean_timeline(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, since_id=None):
     # Create Twitter Connection
-    twitter_auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'),config('TWITTER_CONSUMER_SECRET'))
+    twitter_auth = tweepy.OAuthHandler(
+        config("TWITTER_CONSUMER_KEY"), config("TWITTER_CONSUMER_SECRET")
+    )
     access_token = TWITTER_ACCESS_TOKEN
     access_token_secret = TWITTER_ACCESS_TOKEN_SECRET
     twitter_auth.set_access_token(access_token, access_token_secret)
@@ -50,13 +59,14 @@ def clean_timeline(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET,since_id=Non
     TWITTER = tweepy.API(twitter_auth)
 
     try:
-        home_timeline = TWITTER.home_timeline(count=32,
-                                              tweet_mode='extended',
-                                              exlude_rts=False,
-                                              exclude_replies=False,
-											  since_id=since_id)
-        timeline = [ process_tweet(full_tweet)
-                   for full_tweet in home_timeline]
+        home_timeline = TWITTER.home_timeline(
+            count=32,
+            tweet_mode="extended",
+            exlude_rts=False,
+            exclude_replies=False,
+            since_id=since_id,
+        )
+        timeline = [process_tweet(full_tweet) for full_tweet in home_timeline]
         output = bert_request(timeline)
         return json.dumps(output)
 
@@ -80,30 +90,30 @@ def process_request(request):
     """
     from flask import abort
 
-    content_type = request.headers['content-type']
+    content_type = request.headers["content-type"]
     request_json = request.get_json(silent=True)
     request_args = request.args
 
-    if content_type == 'application/json':
+    if content_type == "application/json":
         request_json = request.get_json(silent=True)
         # TWITTER_ACCESS_TOKEN check/set/error
-        if request_json and 'TWITTER_ACCESS_TOKEN' in request_json:
-            TWITTER_ACCESS_TOKEN = request_json['TWITTER_ACCESS_TOKEN']
+        if request_json and "TWITTER_ACCESS_TOKEN" in request_json:
+            TWITTER_ACCESS_TOKEN = request_json["TWITTER_ACCESS_TOKEN"]
         else:
             raise ValueError("Missing a 'TWITTER_ACCESS_TOKEN'")
         # TWITTER_ACCESS_TOKEN_SECRET check/set/error
-        if request_json and 'TWITTER_ACCESS_TOKEN_SECRET' in request_json:
-            TWITTER_ACCESS_TOKEN_SECRET = request_json['TWITTER_ACCESS_TOKEN_SECRET']
+        if request_json and "TWITTER_ACCESS_TOKEN_SECRET" in request_json:
+            TWITTER_ACCESS_TOKEN_SECRET = request_json["TWITTER_ACCESS_TOKEN_SECRET"]
         else:
             raise ValueError("Missing a 'TWITTER_ACCESS_TOKEN_SECRET'")
-       #optional param, defaults to None type if not specified, and is also
-	   #optionally None in function definition
-	   if request_json and 'since_id' in requesst_json:
-			since_id=request_json['since_id']
-	   else:
-			since_id = None
+        # optional param, defaults to None type if not specified, and is also
+        # optionally None in function definition
+        if request_json and "since_id" in requesst_json:
+            since_id = request_json["since_id"]
+        else:
+            since_id = None
         # Call the function for the POST request.
-        if request.method == 'POST':
-            return clean_timeline(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET)
+        if request.method == "POST":
+            return clean_timeline(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
     else:
         return abort(405)
