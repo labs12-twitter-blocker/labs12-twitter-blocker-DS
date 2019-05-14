@@ -145,20 +145,17 @@ def predict():
 	
   t = time.time()
 
-  response_list = []
-
-  for response in predict_response_dict['probabilities']:
-    format_dict = {
-      'toxic':response[0],
-      'severe_toxic':response[1] ,
-      'obscene':response[2],
-      'threat':response[3],
-      'insult':response[4],
-      'identity_hate':response[5]
+  def format_dict(response):
+    f_dict = {
+      "toxic": round(response[0], 4),
+      "severe_toxic": round(response[1], 4),
+      "obscene": round(response[2], 4),
+      "threat": round(response[3], 4),
+      "insult": round(response[4], 4),
+      "identity_hate": round(response[5], 4),
     }
-    response_list.append(format_dict)
-
-
+    return f_dict
+  response_list = [format_dict(response) for response in predict_response_dict["probabilities"]]
 
 
   label_dict={"results": response_list}
