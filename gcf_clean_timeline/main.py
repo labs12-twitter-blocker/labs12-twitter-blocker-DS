@@ -108,7 +108,7 @@ def process_request(request):
             raise ValueError("Missing a 'TWITTER_ACCESS_TOKEN_SECRET'")
         # optional param, defaults to None type if not specified, and is also
         # optionally None in function definition
-        if request_json and "since_id" in requesst_json:
+        if request_json and "since_id" in request_json:
             since_id = request_json["since_id"]
         else:
             since_id = None
