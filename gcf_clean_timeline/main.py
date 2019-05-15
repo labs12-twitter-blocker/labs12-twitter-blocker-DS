@@ -48,7 +48,7 @@ def process_request(request):
 
         # Call the function for the POST request.
         if request.method == "POST":
-            return clean_timeline(
+            return execute_async_index_event_loop(
                 TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, num_pages
             )
     else:
@@ -77,7 +77,7 @@ def execute_async_index_event_loop(
     loop = asyncio.get_event_loop()
     loop.run_until_complete(future)
     final_output = {"results": final_output}
-    return final_output
+    return json.dumps(final_output)
 
 
 async def get_index_data_asynchronous(
