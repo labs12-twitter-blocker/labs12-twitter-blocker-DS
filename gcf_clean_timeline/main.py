@@ -11,11 +11,15 @@ def bert_request(timeline):
     data = {"description": tweet_list, "max_seq_length": 32}
     headers = {"Content-type": "application/json", "cache-control": "no-cache"}
     data = json.dumps(data)
-    results = requests.post("http://35.232.114.74:5000/", data=data, headers=headers)
-    output = [
-        {"tweet": t, "bert_result": r}
-        for t, r in zip(timeline, results.json()["results"])
-    ]
+    results = requests.post("http://35.222.5.199:5000/", data=data, headers=headers)
+    # results is a list comprehension of zipping tweet & bert_result lists
+    # and making two dictionary key,values out of each.
+    output = {
+        "results": [
+            {"tweet": t, "bert_result": r}
+            for t, r in zip(timeline, results.json()["results"])
+        ]
+    }
     return output
 
 
@@ -62,9 +66,10 @@ def clean_timeline(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, since_id=N
         home_timeline = TWITTER.home_timeline(
             count=32,
             tweet_mode="extended",
-            exlude_rts=False,
+            exclude_rts=False,
             exclude_replies=False,
             since_id=since_id,
+            page=page,
         )
         timeline = [process_tweet(full_tweet) for full_tweet in home_timeline]
         output = bert_request(timeline)
@@ -106,14 +111,16 @@ def process_request(request):
             TWITTER_ACCESS_TOKEN_SECRET = request_json["TWITTER_ACCESS_TOKEN_SECRET"]
         else:
             raise ValueError("Missing a 'TWITTER_ACCESS_TOKEN_SECRET'")
-        # optional param, defaults to None type if not specified, and is also
-        # optionally None in function definition
-        if request_json and "since_id" in requesst_json:
+
+        if request_json and "since_id" in request_json:
             since_id = request_json["since_id"]
         else:
             since_id = None
+
         # Call the function for the POST request.
         if request.method == "POST":
-            return clean_timeline(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
+            return clean_timeline(
+                TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, since_id
+            )
     else:
         return abort(405)
