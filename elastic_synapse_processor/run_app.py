@@ -139,7 +139,7 @@ def predict():
 
 
   t = time.time()
-  keys = [k for k in predict_response_dict]
+  #keys = [k for k in predict_response_dict]
   logger.debug('Receive and Iterate Took: {}'.format(time.time() - t))
 
 	
