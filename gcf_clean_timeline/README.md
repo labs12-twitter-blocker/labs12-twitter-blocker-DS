@@ -3,7 +3,7 @@ This subdirectory has one purpose, to show the toxicity of each tweet in a logge
 
 Hit the url with a POST request and the proper credentials and the function will output some important tweet metadata and the BERT model output
 
-Run time ~ for 32 tweets: 6 seconds on a cold start, 3 when already turned on.
+Run time ~ 11 seconds * num_pages.
 ## TODO
 * assess whether or not to hardcode URL's, what are alternatives?
 
@@ -21,7 +21,7 @@ headers = {"Content-Type":"application/json"}
 body = {"TWITTER_ACCESS_TOKEN": config('TWITTER_ACCESS_TOKEN'),
         "TWITTER_ACCESS_TOKEN_SECRET": config('TWITTER_ACCESS_TOKEN_SECRET')
         }
-r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/function-1",
+r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/function-2",
                   headers=headers,
                   data=json.dumps(body))
 ```
@@ -32,7 +32,7 @@ import json
 headers = {"Content-Type":"application/json"}
 body = {"TWITTER_ACCESS_TOKEN": config('TWITTER_ACCESS_TOKEN'),
         "TWITTER_ACCESS_TOKEN_SECRET": config('TWITTER_ACCESS_TOKEN_SECRET'),
-	"since_id":1126865912429043713
+	"num_pages":2
         }
 r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/function-1",
                   headers=headers,
@@ -40,27 +40,24 @@ r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/fu
 ```
 ### Returns
 *returning only 2 examples for brevity*
-``` 
-{'tweet': {'tweet': {'user_id': 858716964,
-    'user_name': 'PFTCommenter',
-    'tweet': 'Dan marino of planet’s. V sad',
-    'tweet_id': '1126657772106461187'}},
-  'bert_result': {'identity_hate': 6.970763206481934e-05,
-   'insult': 0.00017696619033813477,
-   'obscene': 0.00011560320854187012,
-   'severe_toxic': 5.3554773330688477e-05,
-   'threat': 5.4776668548583984e-05,
-   'toxic': 0.0004666149616241455}},
- {'tweet': {'tweet': {'user_id': 858716964,
-    'user_name': 'PFTCommenter',
-    'tweet': 'Saturn Jupter Neptune and Uranus have rings though. Earth hasnt won shit https://t.co/fYhmlyUpd4',
-    'tweet_id': '1126657331260002304'}},
-  'bert_result': {'identity_hate': 0.0005328953266143799,
-   'insult': 0.0031661689281463623,
-   'obscene': 0.8130886554718018,
-   'severe_toxic': 0.0009493827819824219,
-   'threat': 0.00034987926483154297,
-   'toxic': 0.766826868057251}}
+``` {
+	"results":[
+	    {
+            "tweet": {
+                "user_id": 954460588977086465,
+                "user_name": "crawford",
+                "tweet": "@DstarDev Go and boil your bottoms, sons of a silly person. I blow my nose at you, so-called Arthur-king, you and all your silly English...you empty headed animal food trough wiper!...... I fart in your general direction! . Your mother was a hamster and your father smelt of elderberries! https://t.co/Txb3QaXys3",
+                "tweet_id": "1128448302880632832"
+            },
+            "bert_result": {
+                "identity_hate": 0.005,
+                "insult": 0.9892,
+                "obscene": 0.1273,
+                "severe_toxic": 0.0022,
+                "threat": 0.0011,
+                "toxic": 0.9495
+            }
+        },
    ...
    ]
 ```
