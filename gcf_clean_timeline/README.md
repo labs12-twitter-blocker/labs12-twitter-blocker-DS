@@ -46,7 +46,11 @@ r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/fu
             "tweet": {
                 "user_id": 954460588977086465,
                 "user_name": "crawford",
-                "tweet": "@DstarDev Go and boil your bottoms, sons of a silly person. I blow my nose at you, so-called Arthur-king, you and all your silly English...you empty headed animal food trough wiper!...... I fart in your general direction! . Your mother was a hamster and your father smelt of elderberries! https://t.co/Txb3QaXys3",
+                "tweet": "@DstarDev Go and boil your bottoms, sons of a silly person. 
+		I blow my nose at you, so-called Arthur-king, you and all your silly English
+		...you empty headed animal food trough wiper!...... 
+		I fart in your general direction! . Your mother was a hamster and 
+		your father smelt of elderberries! https://t.co/Txb3QaXys3",
                 "tweet_id": "1128448302880632832"
             },
             "bert_result": {
