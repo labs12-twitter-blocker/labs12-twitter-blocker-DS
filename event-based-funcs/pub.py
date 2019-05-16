@@ -18,6 +18,7 @@
 import argparse
 import time
 import json
+from decouple import config
 # [START pubsub_quickstart_pub_deps]
 from google.cloud import pubsub_v1
 # [END pubsub_quickstart_pub_deps]
@@ -50,6 +51,14 @@ def pub(project_id, topic_name):
     # Data sent to Cloud Pub/Sub must be a bytestring
 
     users = ['austen', 'bwinterrose', 'elonmusk', 'calebhicks', 'lambdaschool']
+
+    tokens = [config('ACCESS_TOKEN'), config('ACCESS_SECRET')]
+
+    job_id = 6
+
+    users.append(tokens[0])
+    users.append(tokens[1])
+    users.append(job_id)
 
     
 
