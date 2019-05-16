@@ -48,10 +48,14 @@ def process_request(request):
 
         # Call the function for the POST request.
         if request.method == "POST":
-            establish_twitter_credentials(TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_TOKEN_SECRET)
+            establish_twitter_credentials(
+                TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
+            )
             return execute_async_index_event_loop(num_pages)
     else:
         return abort(405)
+
+
 def establish_twitter_credentials(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET):
     """establish Twitter as as global. No need to pass it everytime.
     """
@@ -63,7 +67,7 @@ def establish_twitter_credentials(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SEC
     twitter_auth.set_access_token(access_token, access_token_secret)
     global TWITTER
     TWITTER = tweepy.API(twitter_auth)
-    
+
 
 def execute_async_index_event_loop(num_pages):
     """
@@ -77,16 +81,13 @@ def execute_async_index_event_loop(num_pages):
     final_output = []
     mentions_timeline = get_mentions(final_output, num_pages)
     future = asyncio.ensure_future(
-        get_index_data_asynchronous(
-            final_output,
-            num_pages,
-            mentions_timeline,
-        )
+        get_index_data_asynchronous(final_output, num_pages, mentions_timeline)
     )
     loop = asyncio.get_event_loop()
     loop.run_until_complete(future)
     final_output = {"results": final_output}
     return json.dumps(final_output)
+
 
 def get_mentions(final_output, num_pages):
     """
@@ -110,7 +111,7 @@ def get_mentions(final_output, num_pages):
         print("mentions_timeline: Error: %s" % e)
 
 
-async def get_index_data_asynchronous(final_output,num_pages,mentions_timeline):
+async def get_index_data_asynchronous(final_output, num_pages, mentions_timeline):
     """
     1. Establish an executor and number of workers
     2. Establish the session
@@ -124,13 +125,7 @@ async def get_index_data_asynchronous(final_output,num_pages,mentions_timeline):
             loop = asyncio.get_event_loop()
             tasks = [
                 loop.run_in_executor(
-                    executor,
-                    clean_timeline,
-                    *(
-                        session,
-                        final_output,
-                        page,
-                    )
+                    executor, clean_timeline, *(session, final_output, page)
                 )
                 for page in range(num_pages)
             ] + [
@@ -142,13 +137,14 @@ async def get_index_data_asynchronous(final_output,num_pages,mentions_timeline):
             for response in await asyncio.gather(*tasks):
                 pass
 
+
 def clean_timeline(session, final_output, page):
     """
     1. Retrieve 32 tweets
     2. Prepare the tweet for BERT
     3. Execute the BERT analysis
     4. Add the results to the final_output
-    """   
+    """
     try:
         home_timeline = TWITTER.home_timeline(
             count=32,
@@ -225,11 +221,12 @@ def bert_request(sub_timeline):
     data = {"description": tweet_list, "max_seq_length": 32}
     headers = {"Content-type": "application/json", "cache-control": "no-cache"}
     data = json.dumps(data)
-    results = requests.post("http://35.222.5.199:5000/", data=data, headers=headers).json()["results"]
+    results = requests.post(
+        "http://35.222.5.199:5000/", data=data, headers=headers
+    ).json()["results"]
     # results is a list comprehension of zipping tweet & bert_result lists
     # and making two dictionary key,values out of each.
     output = [
-        {"tweet": t["tweet"], "bert_result": r}
-        for t, r in zip(sub_timeline, results)
+        {"tweet": t["tweet"], "bert_result": r} for t, r in zip(sub_timeline, results)
     ]
     return output
