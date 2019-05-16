@@ -10,7 +10,18 @@ from collections import Counter
 import time
 from decouple import config
 import sys
+import os
 
+
+
+from google.cloud import pubsub_v1
+
+
+import argparse
+import time
+
+
+from google.cloud import firestore
 
 
 
@@ -134,7 +145,7 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
         found_users = [] #Reset ff_users for next run. 
         level += 1
         if level == 1: 
-          print("----------Entering %sst level. Searching the following users:----------\n" % level, searched_users)
+        	print("----------Entering %sst level. Searching the following users:----------\n" % level, searched_users)
         else: # on other runs...
             print("Level %s new connections found:" % len(searched_users), "\n\n")
             print("Total %s connections discovered so far." % (len(past_users)+len(searched_users)) )
@@ -189,6 +200,76 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
 
 
 
+
+
+
+
+    
+
+    
+    
+    
+    
+
+def get_callback(api_future, data):
+    """Wrap message data in the context of the callback function."""
+
+    def callback(api_future):
+        try:
+            print("Published message {} now has message ID {}".format(
+                data, api_future.result()))
+        except Exception:
+            print("A problem occurred when publishing {}: {}\n".format(
+                data, api_future.exception()))
+            raise
+    return callback
+    
+    
+    
+    
+    
+    
+    
+def publish(interactions, topic):
+    """Publishes a message to a Pub/Sub topic."""
+    # [START pubsub_quickstart_pub_client]
+    # Initialize a Publisher client
+    client = pubsub_v1.PublisherClient()
+    # [END pubsub_quickstart_pub_client]
+    # Create a fully qualified identifier in the form of
+    # `projects/{project_id}/topics/{topic_name}`
+    topic_path = client.topic_path('bert-optimization-testing', topic)
+
+    # Data sent to Cloud Pub/Sub must be a bytestring
+
+    data = json.dumps(interactions, ensure_ascii=False).encode('utf8')
+    
+    api_future = client.publish(topic_path, data=data)
+    api_future.add_done_callback(get_callback(api_future, data))
+
+    # Keep the main thread from exiting until background message
+    # is processed.
+    while api_future.running():
+        time.sleep(0.1)
+    
+    print("data published")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
 def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, first_search_depth=10,
                                      second_search_depth = 10,):
     """
@@ -196,15 +277,33 @@ def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTE
     """
     # Create Twitter Connection
     twitter_auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'),config('TWITTER_CONSUMER_SECRET'))
-    access_token = TWITTER_ACCESS_TOKEN
-    access_token_secret = TWITTER_ACCESS_TOKEN_SECRET
+    
+    print('Twitter Consumer Key: ', config('TWITTER_CONSUMER_KEY'))
+    print('Twitter Consumer Secret: ', config('TWITTER_CONSUMER_SECRET'))
+    
+    #access_token = str(TWITTER_ACCESS_TOKEN)
+    #access_token_secret = str(TWITTER_ACCESS_TOKEN_SECRET)
+    
+    access_token = config('ACCESS_TOKEN')
+    access_token_secret = config('ACCESS_SECRET')
+    
+    
+    
+    
+    print("Access Token: ", access_token)
+    print("Access Token Secret: ", access_token_secret)
+
+    
+    
     twitter_auth.set_access_token(access_token, access_token_secret)
     global TWITTER
     TWITTER = tweepy.API(twitter_auth)
 
-    # Capture API rate limit status
-    #start_api_check = TWITTER.rate_limit_status()
-    #limits_alpha = json_normalize(start_api_check)
+    
+    
+    
+    original_user = str(original_user)
+    
 
     # Call the Multithreaded function
     response_data, interactions_found = interaction_chain(original_user, first_search_depth, second_search_depth)
@@ -214,20 +313,14 @@ def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTE
 
     print(response_data)
     print(interactions_found)
+    #post_to_firestore(response_data, interactions_found, original_user)
+    publish(response_data, 'listen_for_interactions')
 
 
 
 
 
-
-
-
-
-
-
-
-
-
+    
 def hello_pubsub(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
     Args:
@@ -238,4 +331,7 @@ def hello_pubsub(event, context):
     print(pubsub_message)
     parsed = ast.literal_eval(pubsub_message)
     print(parsed[0])
+    job_id = parsed[7]
+    
+    publish(job_id, 'post_to_db')
     generate_recommendation_response(parsed[0], parsed[5], parsed[6])
