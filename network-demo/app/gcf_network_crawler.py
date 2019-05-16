@@ -9,14 +9,7 @@ nest_asyncio.apply()
 
 
 def process_request(request):
-    """ Responds to a GET request with "Hello world!". Forbids a PUT request.
-    Args:
-        request (flask.Request): The request object.
-        <http://flask.pocoo.org/docs/1.0/api/#flask.Request>
-    Returns:
-        The response text, or any set of values that can be turned into a
-         Response object using `make_response`
-        <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>.
+    """
     """
     from flask import abort
 
@@ -70,7 +63,9 @@ def main(search):
     edge_list = []
     edge_list, top_interactions = execute_async_input_user_event_loop(search, edge_list)
     edge_list = execute_async_interactions_event_loop(top_interactions, edge_list)
-    return edge_list
+    edge_list_dict = {"edge_list": edge_list}
+
+    return json.dumps(edge_list)
 
 
 def execute_async_input_user_event_loop(search, edge_list):
