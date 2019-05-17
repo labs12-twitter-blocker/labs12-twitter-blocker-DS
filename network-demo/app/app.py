@@ -12,6 +12,7 @@ from collections import Counter
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import nest_asyncio
+from itertools import chain
 
 nest_asyncio.apply()
 
