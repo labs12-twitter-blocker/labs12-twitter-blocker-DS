@@ -270,8 +270,8 @@ def publish(interactions, topic):
     
 
 
-def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, first_search_depth=10,
-                                     second_search_depth = 10,):
+def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, message_id, first_search_depth=10,
+                                     second_search_depth = 10):
     """
     Takes in all the established variables and passes them to the correct functions. 
     """
@@ -303,18 +303,18 @@ def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTE
     
     
     original_user = str(original_user)
-    
+    output_data = [message_id]
 
     # Call the Multithreaded function
     response_data, interactions_found = interaction_chain(original_user, first_search_depth, second_search_depth)
     print("Called Multitreading Function")
-
+    output_data.append(response_data)
 
 
     print(response_data)
     print(interactions_found)
     #post_to_firestore(response_data, interactions_found, original_user)
-    publish(response_data, 'listen_for_interactions')
+    publish(output_data, 'listen_for_interactions')
 
 
 
@@ -334,4 +334,4 @@ def hello_pubsub(event, context):
     job_id = parsed[7]
     
     publish(job_id, 'post_to_db')
-    generate_recommendation_response(parsed[0], parsed[5], parsed[6])
+    generate_recommendation_response(parsed[0], parsed[5], parsed[6], job_id)
