@@ -23,6 +23,9 @@ import time
 
 from google.cloud import firestore
 
+import datetime
+
+
 
 
 
@@ -36,6 +39,7 @@ def get_user_interactions(list_dict):
             `output`, list of tuples: paired list of search & interaction targets. 
             `next_query`, list: a list of names to search on the next run. 
             `limit`, int: A flag to indicate how many results should be returned. 
+            'level'
     
     Functionality:
         Initialize search for the specific user.
@@ -53,7 +57,41 @@ def get_user_interactions(list_dict):
         instead updates the values of `output` and `next_query` extending
         the lists that were passed to it as args.
     """
-    search, output, found, search_depth = list_dict
+    search, output, found, search_depth, level = list_dict
+    
+    if level > 1:
+    
+    
+    
+        project_id = os.environ['GCP_PROJECT']
+        db = firestore.Client()
+        get_user = db.collection(u'interactions').document(search).get()
+        user_info = get_user.to_dict()
+    
+        if 'timestamp' in user_info:
+    
+    
+    
+            time = user_info['timestamp']
+        
+            d = time.strftime("%Y-%m-%d")
+            d = datetime.datetime.strptime(d, "%Y-%m-%d")
+            now = datetime.datetime.now()
+
+            delta = now - d
+            if delta.days < 7:
+                print("User has already been checked this week.")
+    		
+                print('TEST CHECK DB: ', time)
+                print('since: ', delta)
+                return
+    
+    
+    
+    
+    
+    
+    
     try:
         twitter_user = TWITTER.get_user(search)
         print('grabbing timeline for user: ', search)
@@ -165,7 +203,7 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
     # Level 1 Run.
     loop_num = 1
     with PoolExecutor(max_workers=20) as executor:
-        for _ in executor.map(get_user_interactions, [(x, data, found_users, first_search_depth) for x in users_to_search]):
+        for _ in executor.map(get_user_interactions, [(x, data, found_users, first_search_depth, level) for x in users_to_search]):
             print("Loop # ", loop_num, " . Time so far:", time.time() - start_time)
             loop_num +=1
             pass
@@ -176,7 +214,7 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
     # Level 2 Run.
     loop_num = 1
     with PoolExecutor(max_workers=20) as executor:
-        for _ in executor.map(get_user_interactions, [(x, data, found_users, second_search_depth) for x in users_to_search]):
+        for _ in executor.map(get_user_interactions, [(x, data, found_users, second_search_depth, level) for x in users_to_search]):
             print("Loop # ", loop_num, " . Time so far:", time.time() - start_time)
             loop_num +=1
             pass
@@ -191,8 +229,8 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
     print("Total Connections found:", (len(past_users)-1))
     print("Total Overall Interactions found:", len(data))
     num_total_interactions = len(data)
-    print(past_users+users_to_search)
-    return data, num_total_interactions
+    print(past_users)
+    return data, past_users
 
 
 
@@ -306,13 +344,14 @@ def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTE
     output_data = [message_id]
 
     # Call the Multithreaded function
-    response_data, interactions_found = interaction_chain(original_user, first_search_depth, second_search_depth)
+    response_data, users_found = interaction_chain(original_user, first_search_depth, second_search_depth)
     print("Called Multitreading Function")
+    output_data.append(users_found)
     output_data.append(response_data)
 
 
     print(response_data)
-    print(interactions_found)
+    print(users_found)
     #post_to_firestore(response_data, interactions_found, original_user)
     publish(output_data, 'listen_for_interactions')
 
