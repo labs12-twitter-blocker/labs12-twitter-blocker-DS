@@ -19,6 +19,7 @@ import argparse
 import time
 import json
 from decouple import config
+import random
 # [START pubsub_quickstart_pub_deps]
 from google.cloud import pubsub_v1
 # [END pubsub_quickstart_pub_deps]
@@ -54,7 +55,7 @@ def pub(project_id, topic_name):
 
     tokens = [config('ACCESS_TOKEN'), config('ACCESS_SECRET')]
 
-    job_id = 318238567479
+    job_id = random.randint(100000, 999999)
 
     users.append(tokens[0])
     users.append(tokens[1])
