@@ -21,14 +21,20 @@ def hello_pubsub(event, context):
     print(start)
     
     global job_id
-    job_id = base64.b64decode(event['data']).decode('utf-8')
-    job_id = int(job_id)
+    parsed = base64.b64decode(event['data']).decode('utf-8')
+    parsed = ast.literal_eval(parsed)
     
+    job_id = int(parsed[0])
+    num_expected = int(parsed[1])
     
     global data
     data = []
     global num_recieved
     num_recieved = 0
+    
+    if num_expected < 5:
+        num_recieved = 5 - num_expected
+    
     
     
     global users_list
@@ -136,9 +142,9 @@ def process_data(message):
         print(interactions)
         global data
         data.extend([tuple(x) for x in interactions])
-        print(data[0])
-        test = data[0]
-        print(type(test))
+        #print(data[0])
+        #test = data[0]
+        #print(type(test))
         print('finished processing')
     
     
@@ -203,14 +209,6 @@ def get_callback(api_future, data):
                 data, api_future.exception()))
             raise
     return callback        
-    
-    
-    
-    
-    
-    
- 
-        
     
     
     

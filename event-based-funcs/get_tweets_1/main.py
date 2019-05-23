@@ -57,7 +57,7 @@ def get_user_interactions(list_dict):
         instead updates the values of `output` and `next_query` extending
         the lists that were passed to it as args.
     """
-    search, output, found, search_depth, level = list_dict
+    search, output, found, search_depth, level, errors = list_dict
     
     if level > 1:
     
@@ -68,7 +68,7 @@ def get_user_interactions(list_dict):
         get_user = db.collection(u'interactions').document(search).get()
         user_info = get_user.to_dict()
     
-        if 'timestamp' in user_info:
+        if user_info is not None:
     
     
     
@@ -85,6 +85,7 @@ def get_user_interactions(list_dict):
                 print('TEST CHECK DB: ', time)
                 print('since: ', delta)
                 return
+    
     
     
     
@@ -109,7 +110,11 @@ def get_user_interactions(list_dict):
         out = re.findall(r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)',remove_orgin_user)
         
         if search_depth > 0:
+            
             top = Counter(out).most_common(search_depth)
+            if len(top) == 0:
+                errors.append(search)
+                return
             interactions = []
             for interaction_count in top:
                 interactions += ([interaction_count[0]] * interaction_count[1])
@@ -129,10 +134,12 @@ def get_user_interactions(list_dict):
             found.extend(found_users)
     
     except tweepy.TweepError:
+        errors.append(search)
         print("tweepy.TweepError")
         
     except:
         e = sys.exc_info()[0]
+        errors.append(search)
         print("Error: %s" % e)
 
 
@@ -152,11 +159,11 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
     
     users_to_search = []# Next search targets
 
+    blacklist = []
 
 
-
-    found_users = []  # f = Found in current search.
-    found_users.append(origin_user)
+    found_users = []
+    found_users.extend(origin_user)
 
     past_users = []  # Current users deposited after llvl, cleans out f users.
     #past_users += origin_user
@@ -174,7 +181,7 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
     # Dedupe & Check user list for previous runs (no duplicated work). 
     def update_lists(searched_users, found_users, past_users, level):
         found_users = list(dict.fromkeys(found_users)) # Dedupe f_users. 
-        past_users += searched_users # Deposit last search(ed)_users into past_users. (input to last run)
+        past_users.extend([x for x in searched_users if x not in blacklist]) # Deposit last search(ed)_users into past_users. (input to last run)
 
         found_users = [x for x in found_users if x not in past_users]
 
@@ -203,7 +210,7 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
     # Level 1 Run.
     loop_num = 1
     with PoolExecutor(max_workers=20) as executor:
-        for _ in executor.map(get_user_interactions, [(x, data, found_users, first_search_depth, level) for x in users_to_search]):
+        for _ in executor.map(get_user_interactions, [(x, data, found_users, first_search_depth, level, blacklist) for x in users_to_search]):
             print("Loop # ", loop_num, " . Time so far:", time.time() - start_time)
             loop_num +=1
             pass
@@ -214,7 +221,7 @@ def interaction_chain(origin_user, first_search_depth, second_search_depth):
     # Level 2 Run.
     loop_num = 1
     with PoolExecutor(max_workers=20) as executor:
-        for _ in executor.map(get_user_interactions, [(x, data, found_users, second_search_depth, level) for x in users_to_search]):
+        for _ in executor.map(get_user_interactions, [(x, data, found_users, second_search_depth, level, blacklist) for x in users_to_search]):
             print("Loop # ", loop_num, " . Time so far:", time.time() - start_time)
             loop_num +=1
             pass
@@ -308,28 +315,30 @@ def publish(interactions, topic):
     
 
 
-def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, message_id, first_search_depth=10,
-                                     second_search_depth = 10):
+def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, message_id, depth):
     """
     Takes in all the established variables and passes them to the correct functions. 
     """
     # Create Twitter Connection
+    first_search_depth = depth
+    second_search_depth = depth
+    
     twitter_auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'),config('TWITTER_CONSUMER_SECRET'))
     
     print('Twitter Consumer Key: ', config('TWITTER_CONSUMER_KEY'))
     print('Twitter Consumer Secret: ', config('TWITTER_CONSUMER_SECRET'))
     
-    #access_token = str(TWITTER_ACCESS_TOKEN)
-    #access_token_secret = str(TWITTER_ACCESS_TOKEN_SECRET)
+    access_token = str(TWITTER_ACCESS_TOKEN)
+    access_token_secret = str(TWITTER_ACCESS_TOKEN_SECRET)
     
-    access_token = config('ACCESS_TOKEN')
-    access_token_secret = config('ACCESS_SECRET')
-    
-    
+    #access_token = config('ACCESS_TOKEN')
+    #access_token_secret = config('ACCESS_SECRET')
     
     
-    print("Access Token: ", access_token)
-    print("Access Token Secret: ", access_token_secret)
+    
+    
+    #print("Access Token: ", access_token)
+    #print("Access Token Secret: ", access_token_secret)
 
     
     
@@ -340,7 +349,7 @@ def generate_recommendation_response(original_user, TWITTER_ACCESS_TOKEN, TWITTE
     
     
     
-    original_user = str(original_user)
+    #original_user = str(original_user)
     output_data = [message_id]
 
     # Call the Multithreaded function
@@ -369,8 +378,39 @@ def hello_pubsub(event, context):
     pubsub_message = base64.b64decode(event['data']).decode('utf-8')
     print(pubsub_message)
     parsed = ast.literal_eval(pubsub_message)
+
     print(parsed[0])
-    job_id = parsed[7]
+    job_id = parsed[3]
     
-    publish(job_id, 'post_to_db')
-    generate_recommendation_response(parsed[0], parsed[5], parsed[6], job_id)
+    to_search = []
+    search_users = []
+    print(type(parsed[0]))
+    search_users.extend([x for x in parsed[0]])
+    print(search_users)
+    print(search_users[0])
+    num_of_searches = int(parsed[4]/5)
+    
+    if (parsed[4]%5) > 0:
+        num_of_searches = num_of_searches + 1
+    
+    print('num of searches: ', num_of_searches)
+    for i in range(num_of_searches):
+        
+            
+        index = ((i+1)*5)-5
+        print(index)
+        to_search.append(str(search_users[index]))
+    
+    
+    depth = 50 // (num_of_searches * 5)
+    
+    if depth < 3:
+        depth = 3
+        
+    to_publish = []
+    to_publish.append(job_id)
+    to_publish.append(parsed[4])
+    publish(to_publish, 'post_to_db')
+
+    print(to_search)
+    generate_recommendation_response(to_search, parsed[1], parsed[2], job_id, depth)
