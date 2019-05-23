@@ -32,26 +32,27 @@ import json
 headers = {"Content-Type":"application/json"}
 body = {"TWITTER_ACCESS_TOKEN": config('TWITTER_ACCESS_TOKEN'),
         "TWITTER_ACCESS_TOKEN_SECRET": config('TWITTER_ACCESS_TOKEN_SECRET'),
-	"num_pages":2
+	"num_pages":2,
+	"toxicity_threshold":0.8
         }
 r = requests.post("https://us-central1-twitter-bert-models.cloudfunctions.net/function-1",
                   headers=headers,
                   data=json.dumps(body))
 ```
 ### Returns
-*returning only 2 examples for brevity*
+Function returns a full tweet object and the bert result. For more information on the tweet object, please use https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/intro-to-tweet-json.
+*This is a modified result intended to illustrate shape of the bert result*
 ``` {
 	"results":[
 	    {
             "tweet": {
-                "user_id": 954460588977086465,
-                "user_name": "crawford",
-                "tweet": "@DstarDev Go and boil your bottoms, sons of a silly person. 
+                ...
+                "full_text": "@DstarDev Go and boil your bottoms, sons of a silly person. 
 		I blow my nose at you, so-called Arthur-king, you and all your silly English
 		...you empty headed animal food trough wiper!...... 
 		I fart in your general direction! . Your mother was a hamster and 
 		your father smelt of elderberries! https://t.co/Txb3QaXys3",
-                "tweet_id": "1128448302880632832"
+                ...
             },
             "bert_result": {
                 "identity_hate": 0.005,

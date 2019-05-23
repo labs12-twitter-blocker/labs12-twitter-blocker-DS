@@ -46,12 +46,18 @@ def process_request(request):
         else:
             num_pages = 1
 
+        if request_json and "toxicity_threshold" in request_json:
+            toxicity_threshold = request_json["toxicity_threshold"]
+        else:
+            toxicity_threshold = 0.0
+
         # Call the function for the POST request.
         if request.method == "POST":
             establish_twitter_credentials(
                 TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET
             )
-            return execute_async_index_event_loop(num_pages)
+
+            return execute_async_index_event_loop(num_pages, toxicity_threshold)
     else:
         return abort(405)
 
@@ -69,7 +75,7 @@ def establish_twitter_credentials(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SEC
     TWITTER = tweepy.API(twitter_auth)
 
 
-def execute_async_index_event_loop(num_pages):
+def execute_async_index_event_loop(num_pages, toxicity_threshold):
     """
     This function does something analogous to compiling the get_data_asynchronously function,
     Then it executes loop.
@@ -85,7 +91,12 @@ def execute_async_index_event_loop(num_pages):
     )
     loop = asyncio.get_event_loop()
     loop.run_until_complete(future)
-    final_output = {"results": final_output}
+    # filter tweets for toxicity, removing None's
+    final_output = [
+        filter_tweets(tweet, toxicity_threshold)
+        for tweet in final_output
+        if filter_tweets(tweet, toxicity_threshold) is not None
+    ]
     return json.dumps(final_output)
 
 
@@ -94,21 +105,21 @@ def get_mentions(final_output, num_pages):
     Get tweets in which the user is mentioned.
     """
     try:
-        home_timeline = TWITTER.mentions_timeline(
+        mentions_timeline = TWITTER.mentions_timeline(
             count=32 * num_pages, tweet_mode="extended", exclude_rts=False
         )
-        timeline = [process_tweet(full_tweet) for full_tweet in home_timeline]
-        # create list of lists where sublists = 32 for BERT model
-        z = grouper(timeline, 32)
-        timeline = [[i for i in subz if i is not None] for subz in z]
-        return timeline
+
+        # create list of lists where sublists = 32 for BERT model, removing None's
+        z = list(grouper(mentions_timeline, 32))
+        mentions_timeline = [[i for i in subz if i is not None] for subz in z]
+        return mentions_timeline
 
     except tweepy.TweepError:
         print("tweepy.TweepError")
 
     except:
         e = sys.exc_info()[0]
-        print("mentions_timeline: Error: %s" % e)
+        print("get_metions: Error: %s" % e)
 
 
 async def get_index_data_asynchronous(final_output, num_pages, mentions_timeline):
@@ -153,9 +164,8 @@ def clean_timeline(session, final_output, page):
             exclude_replies=False,
             page=page,
         )
-        home_timeline = [process_tweet(full_tweet) for full_tweet in home_timeline]
-        output = bert_request(home_timeline)
-        final_output += output
+        tweet_text_list = [process_tweet(h.full_text) for h in home_timeline]
+        final_output += bert_request(tweet_text_list, home_timeline)
 
     except tweepy.TweepError:
         print("clean_timeline: tweepy.TweepError")
@@ -169,16 +179,18 @@ def clean_mentions(session, sub_timeline, final_output):
     """
     Puts together the new BERT results with the final_output
     """
-    final_output += bert_request(sub_timeline)
+    tweet_text_list = [process_tweet(h.full_text) for h in sub_timeline]
+    final_output += bert_request(tweet_text_list, sub_timeline)
 
 
-def process_tweet(full_tweet):
+def process_tweet(tweet_text):
     """
     Prepare the tweet for the BERT model.
     """
-    tweet = full_tweet.full_text
     # strip username
-    tweet = re.sub(r"(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", tweet)
+    tweet = re.sub(
+        r"(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", tweet_text
+    )
     # strip newlines and unicode characters that aren't formatted
     tweet = re.sub(r"\n|&gt;|RT :", "", tweet)
     # strip twitter urls from tweets
@@ -192,14 +204,7 @@ def process_tweet(full_tweet):
     tweet = tweet.strip()
     # make api request for toxicity analysis
 
-    tweet_info = {
-        "tweet": {
-            "user_id": full_tweet.user.id,
-            "user_name": full_tweet.user.name,
-            "tweet": full_tweet.full_text,
-            "tweet_id": full_tweet.id_str,
-        }
-    }
+    tweet_info = {"tweet": tweet}
     return tweet_info
 
 
@@ -210,23 +215,40 @@ def grouper(iterable, n, fillvalue=None):
     return zip_longest(fillvalue=fillvalue, *args)
 
 
-def bert_request(sub_timeline):
+def bert_request(tweet_text_list, sub_timeline):
     """
     1. Extract just the tweet from the sub_timeline
     2. Pass the list of tweets to the BERT function.
     3. Zip the original sub_timeline passed to the function
     4. Put the zip object into a dictionary
     """
-    tweet_list = [tweet["tweet"]["tweet"] for tweet in sub_timeline]
+    tweet_list = [tweet["tweet"] for tweet in tweet_text_list]
     data = {"description": tweet_list, "max_seq_length": 32}
     headers = {"Content-type": "application/json", "cache-control": "no-cache"}
     data = json.dumps(data)
     results = requests.post(
-        "http://35.222.5.199:5000/", data=data, headers=headers
+        "http://35.232.246.186:5000/", data=data, headers=headers
     ).json()["results"]
     # results is a list comprehension of zipping tweet & bert_result lists
     # and making two dictionary key,values out of each.
     output = [
-        {"tweet": t["tweet"], "bert_result": r} for t, r in zip(sub_timeline, results)
+        {"tweet": t._json, "bert_result": r} for t, r in zip(sub_timeline, results)
     ]
     return output
+
+
+def filter_tweets(tweet, toxicity_threshold):
+    """
+    Used with a list comprehension to return only a list of toxic tweets
+    """
+    if (
+        (tweet["bert_result"]["identity_hate"] >= toxicity_threshold)
+        | (tweet["bert_result"]["insult"] >= toxicity_threshold)
+        | (tweet["bert_result"]["obscene"] >= toxicity_threshold)
+        | (tweet["bert_result"]["severe_toxic"] >= toxicity_threshold)
+        | (tweet["bert_result"]["threat"] >= toxicity_threshold)
+        | (tweet["bert_result"]["toxic"] >= toxicity_threshold)
+    ):
+        return tweet
+    else:
+        pass
