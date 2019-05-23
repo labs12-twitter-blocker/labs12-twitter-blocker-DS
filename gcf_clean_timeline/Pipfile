@@ -10,6 +10,7 @@ tweepy = "*"
 python-decouple = "*"
 requests = "*"
 flask = "*"
+nest-asyncio = "*"
 
 [requires]
 python_version = "3.7"
