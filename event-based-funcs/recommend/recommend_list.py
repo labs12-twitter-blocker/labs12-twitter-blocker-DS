@@ -8,7 +8,9 @@ from google.cloud import pubsub_v1
 
 from google.cloud import firestore
 
-
+import pandas as pd
+import numpy as np
+import networkx as nx
 
 
 
@@ -41,7 +43,14 @@ def hello_world(request):
     
     test_str = ' '.join(users_list)
     
-    return test_str
+    data = unpack_from_db(users_list)
+    print(data)
+    
+    
+    response = pagerank(data, users_list)
+    
+    
+    return response
     
     
     
@@ -99,14 +108,15 @@ def process_request(request):
         # Call the function for the POST request. 
         if request.method == 'POST':
             
-            
+            num_to_search = len(search_users)
             job_data = []
             global job_id
             job_id = random.randint(100000,999999)
-            job_data.extend(search_users)
+            job_data.append(search_users)
             job_data.append(TWITTER_ACCESS_TOKEN)
             job_data.append(TWITTER_ACCESS_TOKEN_SECRET)
             job_data.append(job_id)
+            job_data.append(num_to_search)
             
             
             
@@ -195,7 +205,6 @@ def listen_for_db():
     
     
 def process_data(message):
-    message.ack()
     global job_id
     message_num = job_id
     message_data = message.data.decode('utf-8')
@@ -203,6 +212,7 @@ def process_data(message):
     message_id = int(message_data[0])
     print(message_id)
     if message_id == message_num:
+        message.ack()
         
         #print('Received message: {}'.format(message))
         users_in_job = message_data[1]
@@ -221,5 +231,79 @@ def process_data(message):
         print("expected message id: ", message_num)
     
 
+def unpack_from_db(users):
+    output = []
+    
+    #project_id = os.environ['GCP_PROJECT']
+    db = firestore.Client()
     
     
+    
+    for user in users:
+        get_user = db.collection(u'interactions').document(user).get()
+        user_info = get_user.to_dict()
+        print(user)
+        print(user_info)
+        if user_info is not None:
+            for key, value in user_info.items():
+                if key == 'timestamp':
+                    print('hit a timestamp')
+                else:
+                    output.extend([(user, key) for interaction in range(value)])
+                
+    return output
+        
+    
+def pagerank(data, users):
+    # DF before Groupby (Turn response data into pandas df)
+    t = time.time()
+    df = pd.DataFrame(data, 
+                      columns=['source_user', 'interaction_user'])
+
+    # Create groupby counts
+    df_group = (df.groupby(['source_user','interaction_user'])
+                  .size().reset_index().rename(columns={0: "count"}))
+
+    # Create "Normalized" interaction weights for each user's interactions. 
+    a = df_group.groupby('source_user')['count'].transform('sum')
+    df_group['weight'] = df_group['count'].div(a)
+    print("normalized data via groupby")
+    
+    
+    print('data formatting took: ', time.time()-t)
+    print(df_group.head(20))
+
+    # Create the directional graph object. 
+    # (Uses weight or count derived summaries.)
+    t = time.time()
+    DG = nx.from_pandas_edgelist(df_group, "source_user", "interaction_user",
+                                edge_attr=['weight', "count"], 
+                                create_using=nx.DiGraph())
+    found_nodes = nx.number_of_nodes(DG)
+    print("converted df to graph with %s nodes", found_nodes)
+    print('convert df to graph took: ', time.time()-t)
+
+    # Pagerank it!
+    t = time.time()
+    pr = nx.pagerank_numpy(DG, alpha= 0.85, weight="weight") 
+    dg_pr_df = pd.DataFrame([pr]).T.reset_index() 
+    dg_pr_df = dg_pr_df.rename(index=str, columns={"index": "username", 0: "pagerank"})
+    dg_pr_df = dg_pr_df.sort_values(by=['pagerank'], ascending=False)
+    print("pageranked the values")
+    print("pagerank took: ", time.time()-t)
+    
+    
+    output = return_json(dg_pr_df, users, found_nodes)
+    return output
+
+
+def return_json(pageranked_df, search_target_users, qty_users_found):
+    ranked_dict = pageranked_df[["username"]].head(50).username.tolist()
+    #search_dict = {("search_user_%s" % i) : search_target_users[i] for i in range(0, len(search_target_users))}
+    final_dict = {
+                    
+                  "ranked_results": ranked_dict
+              
+    }
+    final_json = json.dumps(final_dict)
+    return final_json # Returns JSON string. 
