@@ -11,6 +11,6 @@ pip==18.0
 requests==2.20.0
 setuptools==40.2.0
 Werkzeug==0.14.1
-wheel==0.31.1
+wheel==0.38.1
 tweepy==3.7.0
 python-decouple==3.1
